@@ -1,7 +1,7 @@
 from collections import Counter
 from river.base import DriftDetector
 from .base.monitoring_step import MonitoringStep
-from typing import List, Dict
+from history.base.history_manager import HistoryManager
 
 
 
@@ -10,13 +10,15 @@ class RiverMonitoringStep(MonitoringStep):
     def __init__(self, step_name: str, river_detector: DriftDetector):
         self.detector: DriftDetector = river_detector
         self.step_name: str = f'river-detector_{step_name}'
-        self.counter: int = 0
 
-    def monitor(self, x_history: List, y_history: List[int]=None, prediction_history: List[int]=None, drift_history: List[int]=None) -> dict:
-        self.counter += 1
-        self.detector.update(x_history[-1])
+    def monitor(self, history: HistoryManager) -> bool:
+        self.detector.update(history.x_history[-1]) 
+        
         is_drift_detected = self.detector.drift_detected
-        return self._prepare_test_output(is_drift_detected=is_drift_detected, detection_idx=self.counter)
+        test_report =  self._prepare_test_output(is_drift_detected=is_drift_detected, detection_idx=history.counter)
+        # TO DO:
+        # log artifact - test_report
+        return is_drift_detected
 
     def _prepare_test_output(self, is_drift_detected: bool, detection_idx: int):
         if not is_drift_detected:

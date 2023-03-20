@@ -1,11 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import List, Dict
 from history.base.history_manager import HistoryManager
 
 
-
-class MonitoringStep(ABC):
+class BatchMonitoringStrategy(ABC):
 
     @abstractmethod
-    def monitor(self, history: HistoryManager) -> bool:
+    def get_ref_curr(self, history: HistoryManager):
         pass
+    

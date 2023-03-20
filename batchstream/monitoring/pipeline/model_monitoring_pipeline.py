@@ -2,6 +2,7 @@ from typing import List, Dict, Tuple
 import numpy as np
 from ..base.model_monitoring import ModelMonitoring
 from steps.base.monitoring_step import MonitoringStep
+from history.base.history_manager import HistoryManager
 
 
 
@@ -11,11 +12,11 @@ class ModelMonitoringPipeline(ModelMonitoring):
         self.test_steps = test_steps
         self.detect_condition = detect_condition
 
-    def monitor(self, x_history: List, y_history: List[int], prediction_history: List[int], drift_history: List[List[int]]) -> bool:
-        monitoring_results: Dict[str, bool] = []
+    def monitor(self, history: HistoryManager) -> bool:
+        monitoring_results: Dict[str, dict] = {}
         for test_name, test in self.test_steps:
-            monitoring_results.update({test_name: test.monitor(x_history, y_history, prediction_history, drift_history)})
-        return self._make_is_drift_decision(list(monitoring_results.values()))
+            monitoring_results.update({test_name: test.monitor(history)})
+        return self._make_is_drift_decision(monitoring_results.values()))
 
     def _make_is_drift_decision(self, monitoring_results: List[bool]):
         if self.detect_condition == 'any':

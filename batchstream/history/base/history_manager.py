@@ -1,12 +1,11 @@
-from abc import ABC, abstractmethod
 import pandas as pd
 from typing import List
 
 
 
-class HistoryManager(ABC):
+class HistoryManager:
 
-    def __init__(self):
+    def __init__(self, n_flush: int = 100_000):
         self._counter: int = 0
         self._x_history: List = None
         self._y_history: List = None
@@ -14,17 +13,15 @@ class HistoryManager(ABC):
         self._in_drift_history: List[List[int]] = None
         self._out_drift_history: List[List[int]] = None
         self._last_retraining: int = None
+        self._n_flush: int = n_flush
 
-    @property
-    def counter(self) -> int:
-        return self._counter
-    
     def update_history_x(self, x):
         self._x_history.append(x)
-        self.increment_counter()
 
     def update_history_y(self, y):
         self._y_history.append(y)
+        self.increment_counter()
+        self.flush()
 
     def update_retraining_info(self, drift_iter: int, detector_idx: int, type: str='out'):
         if type == 'in': 
@@ -39,6 +36,16 @@ class HistoryManager(ABC):
     def increment_counter(self, n: int=1):
         self._counter += n
 
+    def flush(self):
+        if self._counter % self._n_flush == 0 and self._counter != 0:
+            self._x_history = self._x_history[self._n_flush:]
+            self._y_history = self._y_history[self._n_flush:]
+            self._prediction_history = self._prediction_history[self._n_flush:]
+
+    @property
+    def counter(self) -> int:
+        return self._counter
+    
     @property
     def x_history(self) -> pd.DataFrame:
         return pd.DataFrame(self._x_history)
@@ -54,7 +61,3 @@ class HistoryManager(ABC):
     @property
     def drift_history(self) -> List[List[int]]:
         return self._drift_history
-
-    @abstractmethod
-    def flush(self):
-        pass
