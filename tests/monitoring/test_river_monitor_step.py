@@ -1,5 +1,5 @@
 import pytest
-from batchstream.monitoring.pipeline.steps.river_monitoring_step import RiverMonitoringStep
+from batchstream.monitoring.pipeline.steps.online.river_monitoring_step import RiverMonitoringStep
 from river.drift import ADWIN
 import random
 import numpy as np

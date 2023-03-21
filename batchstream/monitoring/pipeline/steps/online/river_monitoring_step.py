@@ -1,6 +1,6 @@
 from collections import Counter
 from river.base import DriftDetector
-from .base.monitoring_step import MonitoringStep
+from ..base.monitoring_step import MonitoringStep
 from history.base.history_manager import HistoryManager
 
 
