@@ -1,5 +1,7 @@
 import pytest
 import pandas as pd
+import shutil
+import logging
 from batchstream.utils.logging.performance_logger import PerformanceEvalLogger
 
 
@@ -48,7 +50,7 @@ def eval_reports_batch_2():
 
 @pytest.fixture
 def expected_report_artifact(eval_reports_batch_1, eval_reports_batch_2):
-    return pd.concat([pd.DataFrame(eval_reports_batch_1), pd.DataFrame(eval_reports_batch_2)]).reset_index()
+    return pd.concat([pd.DataFrame(eval_reports_batch_1), pd.DataFrame(eval_reports_batch_2)]).reset_index(drop=True)
 
 @pytest.fixture
 def expected_number_rows():
@@ -69,8 +71,11 @@ def log(perf_logger: PerformanceEvalLogger, eval_reports_batch_1, eval_reports_b
     perf_logger.log_info("END logging performance_evaluation.")
 
 @pytest.fixture
-def results(log, actual_report_artifact, actual_log_rows_number):
-    return actual_report_artifact, actual_log_rows_number
+def results(log, actual_report_artifact, actual_log_rows_number, test_exp_name):
+    yield actual_report_artifact, actual_log_rows_number
+    logging.shutdown()
+    shutil.rmtree(f'./log/test_experiment')
+    shutil.rmtree(f'./out/test_experiment')
 
 # assert
 def test_performance_logging(results, expected_report_artifact, expected_number_rows):

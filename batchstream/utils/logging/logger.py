@@ -26,8 +26,10 @@ class Logger(ILogger):
         logger.setLevel(logging.DEBUG)
         logging.basicConfig(
             filename=path.join(self._log_dir, f'{self._experiment_id}_{self._module}.log'),
+            filemode='w',
             level=logging.DEBUG,
-            format='%(asctime)s %(name)s %(levelname)s:%(message)s'
+            format='%(asctime)s %(name)s %(levelname)s:%(message)s',
+            force=True
         )
         return logger
 
