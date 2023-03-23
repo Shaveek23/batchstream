@@ -1,16 +1,15 @@
-from __future__ import annotations
-from abc import abstractmethod, ABCMeta
-from model_estimator import ModelEstimator
+from abc import abstractmethod, ABC
 import pandas as pd
 
 
-class BatchModelEstimator(ModelEstimator, metadata=ABCMeta):
 
-    def __init__(self, batch_model):
+class BatchModelEstimator(ABC):
+
+    def __init__(self, batch_model: object):
         self._batch_model = batch_model
 
     @abstractmethod
-    def retrain(self, X_retrain, y_retrain, **retrain_kwargs) -> BatchModelEstimator:
+    def retrain(self, X_retrain, y_retrain, **retrain_kwargs) -> object:
         pass
 
     @abstractmethod

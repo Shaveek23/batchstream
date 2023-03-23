@@ -1,9 +1,9 @@
 from typing import List
 from ..base.stream_pipeline import StreamPipeline
-from detectors.base.detector import DriftDetector
-from history.base.history_manager import HistoryManager
-from ..base.batch_model_estimator import BatchModelEstimator
-from model_comparers.base.model_comparer import ModelComparer
+from ...detectors.base.detector import DriftDetector
+from ...history.base.history_manager import HistoryManager
+from ...estimators.base.batch_model_estimator import BatchModelEstimator
+from ...model_comparers.base.model_comparer import ModelComparer
 
 
 

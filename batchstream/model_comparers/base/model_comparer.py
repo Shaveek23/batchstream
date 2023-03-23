@@ -34,9 +34,10 @@ class ModelComparer(ABC):
         pass
 
 
-class ModelOnlineComparer(ModelComparer, metadata=ABCMeta):
+class ModelOnlineComparer(ModelComparer):
 
     def __init__(self, n_online:int):
+        self.super().__init__()
         self._n_online = n_online
         self._new_model = None
         self._old_model = None
@@ -119,7 +120,7 @@ class ModelOnlineComparer(ModelComparer, metadata=ABCMeta):
         return False, None
 
 
-class ModelOfflineComparer(ModelComparer, metadata=ABCMeta):
+class ModelOfflineComparer(ModelComparer):
 
     def is_new_better_than_old_offline(self, new_model, old_model, X, y) -> Tuple[bool, object]:
         if self._n_online is not None:
