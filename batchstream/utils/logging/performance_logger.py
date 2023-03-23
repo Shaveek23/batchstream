@@ -8,7 +8,7 @@ import os
 
 class PerformanceEvalLogger(Logger):
 
-    def __init__(self, experiment_id: str, module: str='performance_eval', log_dir_path: str=None, out_dir_path: str=None):
+    def __init__(self, experiment_id: str, module: str, log_dir_path: str=None, out_dir_path: str=None):
         super().__init__(experiment_id, module, log_dir_path, out_dir_path)
         self._report_path = path.join(self._output_dir, f'{experiment_id}_{module}_report.csv')
 

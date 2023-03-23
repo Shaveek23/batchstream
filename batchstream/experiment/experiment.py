@@ -4,6 +4,7 @@ from typing import List
 from ..pipelines.base.stream_pipeline import StreamPipeline
 from ..evaluation.base.model_evaluation import ModelEvaluation
 from ..utils.logging.performance_logger import PerformanceEvalLogger
+from ..utils.logging.base.logger_factory import LoggerFactory
 
 
 
@@ -13,11 +14,11 @@ class StreamExperiment:
             self,
             stream_pipeline: StreamPipeline,
             pipeline_evaluation: ModelEvaluation,
-            perf_logger: PerformanceEvalLogger
+            logger_factory: LoggerFactory
         ):
         self._stream_pipeline = stream_pipeline
         self._stream_evaluation = pipeline_evaluation
-        self._perf_logger = perf_logger
+        self._perf_logger: PerformanceEvalLogger = logger_factory.get_performance_logger()
         self._results: List[dict] = []
 
     def run(self, df: pd.DataFrame):

@@ -3,6 +3,7 @@ import pandas as pd
 import shutil
 import logging
 from batchstream.utils.logging.performance_logger import PerformanceEvalLogger
+from batchstream.utils.logging.base.logger_factory import LoggerFactory
 
 
 
@@ -58,7 +59,7 @@ def expected_number_rows():
 
 @pytest.fixture
 def perf_logger(test_exp_name):
-    return PerformanceEvalLogger(experiment_id=test_exp_name)
+    return LoggerFactory(test_exp_name).get_performance_logger()
 
 # act
 @pytest.fixture
