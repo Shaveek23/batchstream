@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Dict
-from history.base.history_manager import HistoryManager
+from .....history.base.history_manager import HistoryManager
 
 
 

@@ -1,7 +1,7 @@
 from evidently.test_suite import TestSuite
 from ..base.monitoring_step import MonitoringStep
-from history.base.history_manager import HistoryManager
-from batch_monitoring_strategy.base.batch_monitoring_strategy import BatchMonitoringStrategy
+from .....history.base.history_manager import HistoryManager
+from .....batch_monitoring_strategy.base.batch_monitoring_strategy import BatchMonitoringStrategy
 
 
 

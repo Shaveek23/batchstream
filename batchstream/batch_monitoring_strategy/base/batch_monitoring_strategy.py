@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from history.base.history_manager import HistoryManager
+from ...history.base.history_manager import HistoryManager
 
 
 class BatchMonitoringStrategy(ABC):

@@ -16,12 +16,6 @@ class SklearnEstimator(BatchModelEstimator):
         super().__init__(sklearn_estimator)
         self._hyperparams_kwargs = hyperparams_kwargs
 
-    def handle(self, x, y: int=None) -> int:
-        return self.batch_model.predict(x)
-
-    def get_name(self) -> str:
-        return "TO DO"
-
     def retrain(self, X_retrain, y_retrain) -> Pipeline:
         cloned_model = clone(self.batch_model)
         if self._hyperparams_kwargs == None or len(self._hyperparams_kwargs) == 0:
@@ -41,3 +35,6 @@ class SklearnEstimator(BatchModelEstimator):
         search = GridSearchCV(model, **self._hyperparams_kwargs)
         search.fit(X_train, y_train)
         return search.best_estimator_
+
+    def get_name(self) -> str:
+        return "TO DO"
