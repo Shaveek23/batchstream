@@ -1,3 +1,6 @@
+out/
+log/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -133,3 +136,5 @@ dmypy.json
 
 
 
+tests/evaluation/__pycache__/test_model_evaluation_pipeline.cpython-310-pytest-7.2.2.pyc
+tests/evaluation/__pycache__/test_model_evaluation_pipeline.cpython-310-pytest-7.2.2.pyc

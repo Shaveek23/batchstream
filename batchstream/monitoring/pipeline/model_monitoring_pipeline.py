@@ -16,10 +16,13 @@ class ModelMonitoringPipeline(ModelMonitoring):
         monitoring_results: Dict[str, dict] = {}
         for test_name, test in self.test_steps:
             monitoring_results.update({test_name: test.monitor(history)})
-        return self._make_is_drift_decision(monitoring_results.values())
+        return self._make_is_drift_decision(list(monitoring_results.values()))
 
     def _make_is_drift_decision(self, monitoring_results: List[bool]):
         if self.detect_condition == 'any':
             return np.array(monitoring_results).any()
         if self.detect_condition == 'all':
             return np.array(monitoring_results).all()
+        
+    def get_name(self):
+        return "ModelMonitoringPipeline"

@@ -22,17 +22,15 @@ class Logger(ILogger):
             os.makedirs(self._output_dir)
 
     def _set_up_logger(self):
-        logger = logging.getLogger(name=f'{self._experiment_id}_{self._module}')
-        logger.setLevel(logging.DEBUG)
-        logging.basicConfig(
-            filename=path.join(self._log_dir, f'{self._experiment_id}_{self._module}.log'),
-            filemode='w',
-            level=logging.DEBUG,
-            format='%(asctime)s %(name)s %(levelname)s:%(message)s',
-            force=True
-        )
-        return logger
-
+        log_file_name = path.join(self._log_dir, f'{self._experiment_id}_{self._module}.log')
+        handler = logging.FileHandler(log_file_name)
+        formatter = logging.Formatter('%(asctime)s %(name)s %(levelname)s:%(message)s')
+        handler.setFormatter(formatter)
+        specified_logger = logging.getLogger(name=f'{self._experiment_id}_{self._module}')
+        specified_logger.setLevel(logging.DEBUG)
+        specified_logger.addHandler(handler)
+        return specified_logger
+        
     def log_exception(self, e: Exception):
         self._logger.exception(e)
 

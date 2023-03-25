@@ -25,6 +25,6 @@ class BatchModelEstimator(ABC):
         return self._batch_model
     
     @batch_model.setter
-    def _set_batch_model(self, value):
+    def batch_model(self, value):
         self._batch_model = value
         

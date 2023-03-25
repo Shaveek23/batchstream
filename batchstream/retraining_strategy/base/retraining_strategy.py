@@ -8,9 +8,9 @@ from ...history.base.history_manager import HistoryManager
 class RetrainingStrategy(ABC):
     
     @abstractmethod
-    def get_retraining_data(history: HistoryManager) -> Tuple[pd.DataFrame, pd.Series, Dict]:
+    def get_retraining_data(self, history: HistoryManager) -> Tuple[pd.DataFrame, pd.Series, Dict]:
         pass
 
     @abstractmethod
-    def get_retest_data(history: HistoryManager) -> Tuple[pd.DataFrame, pd.Series]:
+    def get_retest_data(self, history: HistoryManager) -> Tuple[pd.DataFrame, pd.Series]:
         pass
