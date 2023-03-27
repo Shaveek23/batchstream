@@ -22,7 +22,7 @@ class ModelComparer(ABC):
         pass
  
     @abstractmethod
-    def is_new_better_than_old_online(self, x, y: int, old_model_prediction: int) -> Tuple[bool, object]:
+    def is_new_better_than_old_online(self, x, y: int, old_model_prediction: int) -> Tuple[bool, object, int, int, str]:
         pass
     
     @abstractmethod
@@ -37,7 +37,7 @@ class ModelComparer(ABC):
 class ModelOnlineComparer(ModelComparer):
 
     def __init__(self, n_online:int):
-        self.super().__init__()
+        super().__init__()
         self._n_online = n_online
         self._new_model = None
         self._old_model = None
@@ -67,14 +67,17 @@ class ModelOnlineComparer(ModelComparer):
         return self._is_online_in_progress
 
 
-    def is_new_better_than_old_online(self, x, y:int, old_model_prediction: int) -> Tuple[bool, object]:
+    def is_new_better_than_old_online(self, x, y:int, old_model_prediction: int) -> Tuple[bool, object, int, int, str]:
         if self._n_online is None or self._new_model is None or self._old_model is None:
-            return False, None
-        is_new_better, better_model = self._is_new_better_than_old_offline(x, y, old_model_prediction)
+            return False, None, None, None, None
+        is_new_better, better_model = self._is_new_better_than_old_online(x, y, old_model_prediction)
         if better_model != None:
+            drift_iter = self._drift_iter
+            detector_idx = self._detector_idx
+            detector_type = self._detector_type
             self._clean_and_stop_comparing()
-            return is_new_better, better_model
-        return False, None
+            return is_new_better, better_model, drift_iter, detector_idx, detector_type
+        return False, None, None, None, None
     
     def _clean_and_stop_comparing(self):
         self._new_model = None
@@ -123,9 +126,6 @@ class ModelOnlineComparer(ModelComparer):
 class ModelOfflineComparer(ModelComparer):
 
     def is_new_better_than_old_offline(self, new_model, old_model, X, y) -> Tuple[bool, object]:
-        if self._n_online is not None:
-            return False, None
-        
         if self._is_new_better_than_old_offline(new_model, old_model, X, y):
             return True, new_model
         else: 
@@ -152,7 +152,7 @@ class ModelOfflineComparer(ModelComparer):
     def is_online_in_progress(self):
         return False
 
-    def is_new_better_than_old_online(self, x, y) -> Tuple[bool, object]:
+    def is_new_better_than_old_online(self, x, y, old_model_prediction: int) -> Tuple[bool, object]:
         return False, None
     
     def trigger_online_comparing(self, new_model, old_model, drift_iter:int, detector_idx: int, detector_type: str) -> None:

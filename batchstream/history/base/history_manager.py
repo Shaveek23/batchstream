@@ -1,19 +1,19 @@
 import pandas as pd
-from typing import List
+from typing import List, Dict
 import numpy as np
 
 
 
 class HistoryManager:
 
-    def __init__(self, n_flush_clock: int = 100_000, n_to_stay: int = 90_000, y_dtype=np.uint8):
+    def __init__(self, n_flush_clock: int = 100_000, n_to_stay: int = 90_000, y_dtype=np.int8):
         self._counter: int = 0
         self._x_history: List = []
         self._y_history: List = []
         self._idx_history: List = []
         self._prediction_history: List = []
-        self._in_drift_history: List[List[int]] = []
-        self._out_drift_history: List[List[int]] = []
+        self._in_drift_history: Dict[int, List[int]] = {}
+        self._out_drift_history: Dict[int, List[int]] = {}
         self._last_retraining: int = None
         self._n_flush_clock: int = n_flush_clock
         self._n_to_stay: int = n_to_stay
@@ -30,9 +30,12 @@ class HistoryManager:
 
     def update_retraining_info(self, drift_iter: int, detector_idx: int, type: str='out'):
         if type == 'in': 
-            self._in_drift_history[detector_idx].append(drift_iter)
+            d = self._in_drift_history
         else:
-            self._out_drift_history[detector_idx].append(drift_iter)
+            d = self._out_drift_history
+        if detector_idx not in d:
+            d.update({detector_idx: []})
+        d[detector_idx].append(drift_iter)
         self._last_retraining = drift_iter
 
     def update_predictions(self, pred):

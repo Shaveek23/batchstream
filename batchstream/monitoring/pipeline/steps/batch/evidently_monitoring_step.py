@@ -24,7 +24,8 @@ class EvidentlyMonitoringStep(MonitoringStep):
         self.clock = clock
         self.detect_condition = detect_condition
         self._name = name
-        self._monitoring_logger = logger_factory.get_monitoring_logger(self._name, as_html=False)
+        self._monitoring_logger = logger_factory.get_monitoring_logger(self._name, as_html=True)
+        self._monitoring_logger.log_info(f'EvidentlyMonitoringStep - name:{self._name} - START')
        
     def monitor(self, history: HistoryManager) -> bool:
         report = None

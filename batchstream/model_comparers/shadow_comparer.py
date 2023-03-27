@@ -1,14 +1,17 @@
 from .base.model_comparer import ModelOnlineComparer
-from typing import List, Tuple
+from typing import Tuple
+from sklearn.metrics import f1_score
+from river.utils import dict2numpy
+
 
 
 
 class ShadowOnlineComparer(ModelOnlineComparer):
 
     def __init__(self, n_online=10):
-        super().__init__(self, n_online)
+        super().__init__(n_online)
 
-    def _is_new_better_than_old_online(self, x, y:int, old_model_prediction: int) -> Tuple(bool, object):
+    def _is_new_better_than_old_online(self, x, y:int, old_model_prediction: int) -> Tuple[bool, object]:
         if self._new_model is None:
             return False, None    
         if self._counter < self._n_online:
@@ -20,9 +23,12 @@ class ShadowOnlineComparer(ModelOnlineComparer):
 
     def _handle(self, x, y: int, old_model_prediction: int) -> int:
         self._y_true.append(y)
-        y_pred_new = self._new_model.predict(x)
+        y_pred_new = self._new_model.predict(dict2numpy(x).reshape(1, -1))[0]
         self._predictions_new.append(y_pred_new)
         self._predictions_old.append(old_model_prediction)
 
     def _make_decision(self):
-        return self._predictions_new == self._predictions_old # TO DO: kiedy new better than old
+        f1_new = f1_score(self._predictions_new,  self._y_true)
+        f1_old = f1_score(self._predictions_old,  self._y_true)
+        return f1_new >= f1_old
+    

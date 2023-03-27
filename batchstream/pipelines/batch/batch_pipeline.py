@@ -58,10 +58,8 @@ class BatchPipeline(StreamPipeline):
             pred = self._history.y_history.iloc[-1]
         self._history.update_history_x(x)
         self._history.update_history_y(y)
-        self._history.update_predictions(pred)
         return pred
         
-
     def _handle_drift_detectors(self, detector_type: str='out'):
         if self._history._last_retraining != None and self._history.counter - self._history._last_retraining < self._min_samples_retrain:
             return 
@@ -84,11 +82,11 @@ class BatchPipeline(StreamPipeline):
             self._estimator.batch_model = retrained_model
             return
         self._logger.log_info(f'Iter={self._history.counter}: Comparing the old and the retrained model.')
-        self._select_better_model_offline(retrained_model, X_retest, y_retest)
+        self._select_better_model_offline(retrained_model, X_retest, y_retest, detector_idx, detector_type)
         self._comparer.trigger_online_comparing(retrained_model, self._estimator.batch_model, self._history.counter, detector_idx, detector_type)
 
     def _select_better_model_offline(self, retrained_model, X_retest, y_retest, detector_idx: int, detector_type:str):
-        is_replace, better_model = self._comparer.is_new_better_than_old_offline(self._estimator, retrained_model, X_retest, y_retest)
+        is_replace, better_model = self._comparer.is_new_better_than_old_offline(retrained_model, self._estimator, X_retest, y_retest)
         if better_model != None and is_replace:
             self._logger.log_info(f'Iter={self._history.counter}: offline model selection: replacing model with the retrained one.')
             self._history.update_retraining_info(self._history.counter, detector_idx, detector_type)
@@ -96,10 +94,10 @@ class BatchPipeline(StreamPipeline):
 
     def _select_better_model_online(self, x, y, old_model_prediction):
         if self._comparer == None: return
-        result, better_model = self._comparer.is_new_better_than_old_online(x, y, old_model_prediction)
+        result, better_model, drift_iter, detector_idx, detector_type  = self._comparer.is_new_better_than_old_online(x, y, old_model_prediction)
         if result == True and better_model != None:
             self._logger.log_info(f'Iter={self._history.counter}: online model selection: replacing model with the retrained one.')
-            self._history.update_retraining_info(self._comparer.drift_iter, self._comparer.detector_idx, self._comparer.detector_type)
+            self._history.update_retraining_info(drift_iter, detector_idx, detector_type)
             self._estimator.batch_model = better_model
    
     def get_name(self) -> str:
