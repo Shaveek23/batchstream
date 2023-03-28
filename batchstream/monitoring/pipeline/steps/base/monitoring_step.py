@@ -9,3 +9,7 @@ class MonitoringStep(ABC):
     @abstractmethod
     def monitor(self, history: HistoryManager) -> bool:
         pass
+
+    @abstractmethod
+    def get_params(self) -> dict:
+        pass

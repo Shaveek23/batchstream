@@ -1,7 +1,6 @@
 from river.metrics.base import Metric
 from typing import List, Tuple
 from .base.model_evaluation import ModelEvaluation
-from batchstream.utils.logging.performance_logger import PerformanceEvalLogger
 
 
 
@@ -22,3 +21,11 @@ class ModelEvaluationPipeline(ModelEvaluation):
             results.update({metric_name: metric_value})
         return results
     
+    def get_params(self) -> dict:
+        step_params = []
+        for metric_name, metric in self.metric_steps:
+            step_params.append({metric_name: metric._get_params()})
+        return {
+            'type': self.__class__.__name__,
+            'metric_steps': step_params
+        }

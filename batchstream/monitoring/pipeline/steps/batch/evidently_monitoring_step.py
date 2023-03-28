@@ -46,3 +46,18 @@ class EvidentlyMonitoringStep(MonitoringStep):
         if self.detect_condition == 'all':
             return all_failed
         return any_failed
+
+    def get_params(self) -> dict:
+        params = {
+            'type': self.__class__.__name__,
+            'min_instances': self.min_instances,
+            'clock': self.clock,
+            'detect_condition': self.detect_condition,
+            'name': self._name
+        }
+        suite_tests = []
+        suite_tests.extend([str(x).split(' ')[0] + '>' for x in self.detector._inner_suite.context.tests])
+        params.update({'evidently_test_suite__tests': suite_tests})
+        params.update({'evidently_test_suite__options': self.detector.options_provider._options})
+        return params
+    

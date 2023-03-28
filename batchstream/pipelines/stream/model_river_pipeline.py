@@ -16,3 +16,9 @@ class ModelRiverPipeline(StreamPipeline):
 
     def get_name(self):
         return super().get_name() # TO DO
+    
+    def get_params(self) -> dict:
+        return {
+            'type': self.__class__.__name__,
+            'river_pipeline': self.online_model._get_params()
+        }

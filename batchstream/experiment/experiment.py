@@ -19,11 +19,13 @@ class StreamExperiment:
         self._stream_pipeline = stream_pipeline
         self._stream_evaluation = pipeline_evaluation
         self._perf_logger: PerformanceEvalLogger = logger_factory.get_performance_logger()
+        self._logger = logger_factory.get_logger('experiment_metadata')
         self._results: List[dict] = []
 
     def run(self, df: pd.DataFrame):
         y = df.pop('target')
         X = df
+        self._log_experiment_metadata('dataset_name_todo')
         for xi, yi in stream.iter_pandas(X, y):
             y_pred = int(self._stream_pipeline.handle(xi, yi))
             eval_report = self._stream_evaluation.handle(yi, y_pred)
@@ -42,3 +44,15 @@ class StreamExperiment:
             self._perf_logger.log_info(f'Logging the last batch of {len(self._results)} reports.')
             self._perf_logger.log_eval_report(self._results)
             self._results.clear()
+
+    def get_params(self) -> dict:
+        return {
+            'type': self.__class__.__name__,
+            'stream_pipeline': self._stream_pipeline.get_params(),
+            'pipeline_evaluation': self._stream_evaluation.get_params()
+        }
+
+    def _log_experiment_metadata(self, dataset_name: str):
+        params = {'dataset_name': dataset_name}
+        params.update(self.get_params())
+        self._logger.log_dict_as_json(params)

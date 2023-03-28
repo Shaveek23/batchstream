@@ -51,7 +51,6 @@ class HistoryManager:
             self._prediction_history = self.prediction_history[-(self._n_to_stay):].to_list()
 
     def _flush_x_history(self):
-        n, _ = self.x_history.shape
         x_flushed = self.x_history.iloc[-(self._n_to_stay):, :]
         self._first_index = x_flushed.index.min()
         self._x_history = x_flushed.to_dict('records')
@@ -81,3 +80,11 @@ class HistoryManager:
     @property
     def drift_history(self) -> List[List[int]]:
         return self._drift_history
+    
+    def get_params(self):
+        return {
+            'type': self.__class__.__name__,
+            'n_flush_clock': self._n_flush_clock,
+            'n_to_stay': self._n_to_stay,
+            'y_dtype': str(self._y_dtype)
+        }

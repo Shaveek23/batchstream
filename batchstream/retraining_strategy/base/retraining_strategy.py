@@ -14,3 +14,7 @@ class RetrainingStrategy(ABC):
     @abstractmethod
     def get_retest_data(self, history: HistoryManager) -> Tuple[pd.DataFrame, pd.Series]:
         pass
+
+    @abstractmethod
+    def get_params(self) -> dict:
+        pass

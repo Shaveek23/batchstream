@@ -14,3 +14,9 @@ class BatchModelComparer(ModelOfflineComparer):
         f1_new = f1_score(y_pred_new, y)
         f1_old = f1_score(y_pred_old, y)
         return f1_new >= f1_old
+
+    def get_params(self) -> dict:
+        return {
+            'type': self.__class__.__name__
+        }
+    

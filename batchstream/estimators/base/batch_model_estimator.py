@@ -28,3 +28,6 @@ class BatchModelEstimator(ABC):
     def batch_model(self, value):
         self._batch_model = value
         
+    @abstractmethod
+    def get_params() -> dict:
+        pass

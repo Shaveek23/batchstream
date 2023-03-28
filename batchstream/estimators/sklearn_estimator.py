@@ -38,3 +38,10 @@ class SklearnEstimator(BatchModelEstimator):
 
     def get_name(self) -> str:
         return "TO DO"
+    
+    def get_params(self) -> dict:
+        params = {'type': self.__class__.__name__}
+        params.update({'sklearn_estimator': self.batch_model.get_params()})
+        params.update({'hyperparams': self._hyperparams_kwargs})
+        return params
+        

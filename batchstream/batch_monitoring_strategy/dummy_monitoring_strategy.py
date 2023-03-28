@@ -26,3 +26,12 @@ class DummyMonitoringStrategy(BatchMonitoringStrategy):
             curr = prediction.iloc[-self.n_curr:] 
             return pd.DataFrame(ref, columns=['prediction']), pd.DataFrame(curr, columns=['prediction'])
         return None, None
+
+    def get_params(self) -> dict:
+        return {
+            'type': self.__class__.__name__,
+            'n_curr': self.n_curr,
+            'n_ref': self.n_ref,
+            'type': self._type
+        }
+    

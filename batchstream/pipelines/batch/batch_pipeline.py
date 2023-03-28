@@ -102,3 +102,25 @@ class BatchPipeline(StreamPipeline):
    
     def get_name(self) -> str:
         return "BatchPipeline" # TO DO
+    
+    def get_params(self) -> dict:
+        params = {
+            'type': self.__class__.__name__,
+            'min_samples_retrain': self._min_samples_retrain,
+            'min_samples_first_fit': self._min_samples_first_fit,
+            'initial_return': self._initial_return
+        }
+        params.update({'history': self._history.get_params()})
+        params.update({'batch_model': self._estimator.get_params()})
+        params.update({'model_comparer': None if self._comparer == None else self._comparer.get_params()})
+        params.update({'input_drift_detector': self._get_drift_detectors_params(self._input_drift_detectors)})
+        params.update({'output_drift_detector': self._get_drift_detectors_params(self._output_drift_detectors)})
+        return params
+    
+    def _get_drift_detectors_params(self, detectors) -> List:
+        if detectors == None or len(detectors) == 0:
+            return None
+        if len(detectors) == 1:
+            return [detectors[0].get_params()]
+        return [d.get_params() for d in detectors]
+        

@@ -21,3 +21,10 @@ class DummyRetrainingStrategy(RetrainingStrategy):
             return None, None
         return history.x_history.iloc[:-1, :].iloc[-self._n_last_test:, :], history.y_history.iloc[-self._n_last_test:]
     
+    def get_params(self) -> dict:
+        return {
+            'type': self.__class__.__name__,
+            'n_last_retrain': self._n_last_retrain,
+            'n_last_test': self._n_last_test
+        }
+    

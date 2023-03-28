@@ -1,6 +1,7 @@
 import logging
 from os import path
 import os
+import json
 from .base.logger_base import ILogger
 
 
@@ -39,3 +40,9 @@ class Logger(ILogger):
 
     def log_warn(self, warning: str):
         self._logger.warn(warning)
+
+    def log_dict_as_json(self, d: dict):
+        json_file_name = path.join(self._output_dir, f'{self._experiment_id}_{self._module}.json')
+        with open(json_file_name, 'a') as f:
+            default = lambda o: f"<<non-serializable: {type(o).__qualname__}>>"
+            f.write(json.dumps(d, default=default))

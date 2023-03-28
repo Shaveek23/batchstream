@@ -33,6 +33,10 @@ class ModelComparer(ABC):
     def trigger_online_comparing(self, new_model, old_model, drift_iter:int, detector_idx: int, detector_type: str) -> None:
         pass
 
+    @abstractmethod
+    def get_params(self) -> dict:
+        pass 
+
 
 class ModelOnlineComparer(ModelComparer):
 

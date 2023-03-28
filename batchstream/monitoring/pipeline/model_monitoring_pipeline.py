@@ -26,3 +26,13 @@ class ModelMonitoringPipeline(ModelMonitoring):
         
     def get_name(self):
         return "ModelMonitoringPipeline"
+    
+    def get_params(self) -> dict:
+        params = []
+        for t in self.test_steps:
+            params.append({t[0]: t[1].get_params()})
+        return {
+            'type': self.__class__.__name__,
+            'detect_condition': self.detect_condition,
+            'test_steps': params
+        }

@@ -23,3 +23,10 @@ class DriftDetector:
         X_retest, y_retest = self._retrain_strategy.get_retest_data(history)
         return retrained_model, X_retest, y_retest
     
+    def get_params(self) -> dict:
+        return {
+            'type': self.__class__.__name__,
+            'monitor': self._monitor.get_params(),
+            'retrain_strategy': self._retrain_strategy.get_params()
+        }
+    

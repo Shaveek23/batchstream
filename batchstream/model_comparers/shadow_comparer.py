@@ -32,3 +32,9 @@ class ShadowOnlineComparer(ModelOnlineComparer):
         f1_old = f1_score(self._predictions_old,  self._y_true)
         return f1_new >= f1_old
     
+    def get_params(self) -> dict:
+        return {
+            'type': self.__class__.__name__,
+            'n_online': self._n_online
+        }
+    
