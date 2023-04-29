@@ -24,8 +24,9 @@ class StreamExperiment:
 
     def run(self, df: pd.DataFrame):
         y = df.pop('target')
+        dataset = df.pop('dataset')[0]
         X = df
-        self._log_experiment_metadata('dataset_name_todo')
+        self._log_experiment_metadata(dataset)
         for xi, yi in stream.iter_pandas(X, y):
             pred, probas = self._stream_pipeline.handle(xi, yi)
             y_pred = int(pred)

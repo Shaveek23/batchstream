@@ -56,8 +56,7 @@ class EvidentlyMonitoringStep(MonitoringStep):
             'name': self._name
         }
         suite_tests = []
-        suite_tests.extend([str(x).split(' ')[0] + '>' for x in self.detector._inner_suite.context.tests])
+        suite_tests.extend([{t.name: t.__dict__ } for t in self.detector._inner_suite.context.tests])
         params.update({'evidently_test_suite__tests': suite_tests})
-        params.update({'evidently_test_suite__options': self.detector.options_provider._options})
         return params
     

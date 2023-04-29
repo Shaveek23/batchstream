@@ -19,4 +19,5 @@ def get_internet_ads_df(data_path='./data') -> Tuple[pd.DataFrame, pd.Series]:
         class_col = df.pop('class').replace(['noad', 'ad'], [0, 1])
         df[df.columns[3:]] = df.loc[:, "local":].astype(str).astype(int)
         df['target'] = class_col.copy()
+        df['dataset'] = 'internet_ads'
     return df

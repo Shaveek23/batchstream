@@ -19,12 +19,15 @@ from river.utils import Rolling
 from batchstream.evaluation.river_evaluation_pipeline import RiverEvaluationPipeline
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.pipeline import Pipeline
-
+from utils.read_data.internet_ads import get_internet_ads_df
+from datetime import datetime
 
 
 def main():
+    name = 'test_internet_ads_rf_all'
+    exp_name = f'{name}_{datetime.today().strftime("%Y%m%d_%H%M%S")}'
     history = HistoryManager()
-    logger_factory = LoggerFactory('test-1413')
+    logger_factory = LoggerFactory(exp_name)
 
 
     ### INPUT DRIFT DETECTION
@@ -100,10 +103,7 @@ def main():
     ### Experiment
     experiment = StreamExperiment(batch_pipeline, eval_pipe, logger_factory)
 
-    X, Y = load_breast_cancer(return_X_y=True)
-    df = pd.DataFrame(X)
-    df['target'] = Y
-
+    df = get_internet_ads_df()
     experiment.run(df)
 
 if __name__ == "__main__":
