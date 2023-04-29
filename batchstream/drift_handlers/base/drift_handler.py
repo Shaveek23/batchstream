@@ -1,15 +1,15 @@
 from typing import Tuple
 import pandas as pd
-from ...monitoring.base.model_monitoring import ModelMonitoring
+from ...monitoring.base.drift_monitoring import DriftMonitoring
 from ...retraining_strategy.base.retraining_strategy import RetrainingStrategy
 from ...history.base.history_manager import HistoryManager
 from ...estimators.base.batch_model_estimator import BatchModelEstimator
 
 
 
-class DriftDetector:
+class DriftHandler:
 
-    def __init__(self, monitor: ModelMonitoring, retrain_strategy: RetrainingStrategy):
+    def __init__(self, monitor: DriftMonitoring, retrain_strategy: RetrainingStrategy):
         self._monitor = monitor
         self._retrain_strategy = retrain_strategy
 

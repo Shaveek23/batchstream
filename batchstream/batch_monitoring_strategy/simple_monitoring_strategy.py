@@ -4,7 +4,7 @@ from .base.batch_monitoring_strategy import BatchMonitoringStrategy
 
 
 
-class DummyMonitoringStrategy(BatchMonitoringStrategy):
+class SimpleMonitoringStrategy(BatchMonitoringStrategy):
 
     def __init__(self, n_curr: int=400, n_ref=400, type='data'):
         self.n_curr = n_curr

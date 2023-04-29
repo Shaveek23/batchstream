@@ -27,7 +27,8 @@ class StreamExperiment:
         X = df
         self._log_experiment_metadata('dataset_name_todo')
         for xi, yi in stream.iter_pandas(X, y):
-            y_pred = int(self._stream_pipeline.handle(xi, yi))
+            pred, probas = self._stream_pipeline.handle(xi, yi)
+            y_pred = int(pred)
             eval_report = self._stream_evaluation.handle(yi, y_pred)
             self._log_batch_results(eval_report)
         self._log_last_results()

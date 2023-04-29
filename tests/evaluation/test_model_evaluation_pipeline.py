@@ -1,6 +1,6 @@
 import pytest
 from river.metrics import Accuracy, ROCAUC
-from batchstream.evaluation.model_evaluation_pipeline import ModelEvaluationPipeline
+from batchstream.evaluation.river_evaluation_pipeline import RiverEvaluationPipeline
 
 
 
@@ -28,7 +28,7 @@ def expected_results():
 def eval_pipe():
     acc = Accuracy()
     roc_auc = ROCAUC()
-    eval_pipe = ModelEvaluationPipeline(metric_steps=[('accuracy', acc), ('roc_auc', roc_auc)])
+    eval_pipe = RiverEvaluationPipeline(metric_steps=[('accuracy', acc), ('roc_auc', roc_auc)])
     return eval_pipe
 
 # act

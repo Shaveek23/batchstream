@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import GridSearchCV
@@ -30,6 +31,9 @@ class SklearnEstimator(BatchModelEstimator):
 
     def predict(self, X) -> pd.Series:
         return pd.Series(self.batch_model.predict(X))
+    
+    def predict_proba(self, X) -> np.array:
+        return self.batch_model.predict_proba(X)
 
     def _tune_hyperparams(self, model: Pipeline, X_train, y_train) -> BatchModelEstimator:
         search = GridSearchCV(model, **self._hyperparams_kwargs)

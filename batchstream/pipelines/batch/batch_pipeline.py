@@ -1,7 +1,7 @@
-from typing import List
+from typing import List, Tuple
 from river.utils import dict2numpy
 from ..base.stream_pipeline import StreamPipeline
-from ...detectors.base.detector import DriftDetector
+from ...drift_handlers.base.drift_handler import DriftHandler
 from ...history.base.history_manager import HistoryManager
 from ...estimators.base.batch_model_estimator import BatchModelEstimator
 from ...model_comparers.base.model_comparer import ModelComparer
@@ -13,8 +13,8 @@ class BatchPipeline(StreamPipeline):
 
     def __init__(self,
             batch_model: BatchModelEstimator,
-            input_drift_detector: DriftDetector | List[DriftDetector],
-            output_drift_detector: DriftDetector | List[DriftDetector],
+            input_drift_handlers: DriftHandler | List[DriftHandler],
+            output_drift_handlers: DriftHandler | List[DriftHandler],
             history: HistoryManager,
             logger_factory: LoggerFactory,
             model_comparer: ModelComparer = None,
@@ -25,24 +25,25 @@ class BatchPipeline(StreamPipeline):
         self._estimator = batch_model
         self._comparer = model_comparer
         self._history = history
-        self._input_drift_detectors: List[DriftDetector] = input_drift_detector if isinstance(input_drift_detector, list) else [input_drift_detector]
-        self._output_drift_detectors: List[DriftDetector] = output_drift_detector if isinstance(input_drift_detector, list) else [output_drift_detector]
+        self._input_drift_handlers: List[DriftHandler] = input_drift_handlers if isinstance(input_drift_handlers, list) else [input_drift_handlers]
+        self._output_drift_handlers: List[DriftHandler] = output_drift_handlers if isinstance(input_drift_handlers, list) else [output_drift_handlers]
         self._min_samples_retrain = min_samples_retrain
         self._min_samples_first_fit = min_samples_first_fit
         self._logger = logger_factory.get_logger('BatchPipeline')
         self._initial_return = initial_return
 
-    def handle(self, x, y: int) -> int:
+    def handle(self, x, y: int) -> Tuple[int, List[float]]:
         is_not_ready = self._test_first_fit()
         if is_not_ready: return self._make_result_when_not_fit(x, y)
         self._history.update_history_x(x)
         self._handle_drift_detectors(detector_type='in')
         prediction = self._estimator.predict(dict2numpy(x).reshape(1, -1))[0] 
+        probabilities = self._estimator.predict_proba(dict2numpy(x).reshape(1, -1))
         self._history.update_history_y(y)
         self._history.update_predictions(prediction)
         self._select_better_model_online(x, y, prediction)
         self._handle_drift_detectors(detector_type='out')
-        return prediction
+        return prediction, probabilities
     
     def _test_first_fit(self) -> bool:
         if self._history.counter < self._min_samples_first_fit:
@@ -58,17 +59,17 @@ class BatchPipeline(StreamPipeline):
             pred = self._history.y_history.iloc[-1]
         self._history.update_history_x(x)
         self._history.update_history_y(y)
-        return pred
+        return pred, None
         
     def _handle_drift_detectors(self, detector_type: str='out'):
         if self._history._last_retraining != None and self._history.counter - self._history._last_retraining < self._min_samples_retrain:
             return 
-        detectors = self._output_drift_detectors if detector_type == 'out' else self._input_drift_detectors
+        detectors = self._output_drift_handlers if detector_type == 'out' else self._input_drift_handlers
         if detectors == None or len(detectors) < 1:
             self._logger.log_info(f'Iter={self._history.counter}: _handle_drift_detectors: no ({detector_type}) detectors.')
             return
         for i in range(len(detectors)):
-           d: DriftDetector = detectors[i]
+           d: DriftHandler = detectors[i]
            is_drift_detected = d.detect(self._history)
            if is_drift_detected:
                self._logger.log_info(f'Iter={self._history.counter}: drift detected. {detector_type} detector num.: {i}')
@@ -113,8 +114,8 @@ class BatchPipeline(StreamPipeline):
         params.update({'history': self._history.get_params()})
         params.update({'batch_model': self._estimator.get_params()})
         params.update({'model_comparer': None if self._comparer == None else self._comparer.get_params()})
-        params.update({'input_drift_detector': self._get_drift_detectors_params(self._input_drift_detectors)})
-        params.update({'output_drift_detector': self._get_drift_detectors_params(self._output_drift_detectors)})
+        params.update({'input_drift_detector': self._get_drift_detectors_params(self._input_drift_handlers)})
+        params.update({'output_drift_detector': self._get_drift_detectors_params(self._output_drift_handlers)})
         return params
     
     def _get_drift_detectors_params(self, detectors) -> List:

@@ -3,7 +3,7 @@ from ...history.base.history_manager import HistoryManager
 
 
 
-class ModelMonitoring(ABC):
+class DriftMonitoring(ABC):
 
     @abstractmethod
     def monitor(self, history: HistoryManager) -> bool:

@@ -4,7 +4,7 @@ from .base.model_evaluation import ModelEvaluation
 
 
 
-class ModelEvaluationPipeline(ModelEvaluation):
+class RiverEvaluationPipeline(ModelEvaluation):
     
     def __init__(
         self,
@@ -17,7 +17,7 @@ class ModelEvaluationPipeline(ModelEvaluation):
         results = {}
         for metric_name, metric in self.metric_steps:
             metric.update(y_true, y_predict)
-            metric_value = round(metric.get(), 2)
+            metric_value = round(metric.get(), 4)
             results.update({metric_name: metric_value})
         return results
     

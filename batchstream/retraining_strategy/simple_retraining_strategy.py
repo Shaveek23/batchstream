@@ -5,7 +5,7 @@ from .base.retraining_strategy import RetrainingStrategy
 
 
 
-class DummyRetrainingStrategy(RetrainingStrategy):
+class SimpleRetrainingStrategy(RetrainingStrategy):
 
     def __init__(self, n_last_retrain: int=20, n_last_test: int=10):
         self._n_last_retrain = n_last_retrain

@@ -1,5 +1,6 @@
 from abc import abstractmethod, ABC
 import pandas as pd
+import numpy as np
 
 
 
@@ -18,6 +19,10 @@ class BatchModelEstimator(ABC):
 
     @abstractmethod
     def predict(self, X) -> pd.Series:
+        pass
+
+    @abstractmethod
+    def predict_proba(self, X) -> np.array:
         pass
 
     @property

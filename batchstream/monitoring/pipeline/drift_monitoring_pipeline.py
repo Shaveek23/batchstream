@@ -1,12 +1,12 @@
 from typing import List, Dict, Tuple
 import numpy as np
-from ..base.model_monitoring import ModelMonitoring
+from ..base.drift_monitoring import DriftMonitoring
 from .steps.base.monitoring_step import MonitoringStep
 from ...history.base.history_manager import HistoryManager
 
 
 
-class ModelMonitoringPipeline(ModelMonitoring):
+class DriftMonitoringPipeline(DriftMonitoring):
     
     def __init__(self, test_steps: List[Tuple[str, MonitoringStep]], detect_condition: str='any'):
         self.test_steps = test_steps
