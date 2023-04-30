@@ -28,8 +28,8 @@ class ShadowOnlineComparer(ModelOnlineComparer):
         self._predictions_old.append(old_model_prediction)
 
     def _make_decision(self):
-        f1_new = f1_score(self._predictions_new,  self._y_true)
-        f1_old = f1_score(self._predictions_old,  self._y_true)
+        f1_new = f1_score(self._predictions_new,  self._y_true, average='micro')
+        f1_old = f1_score(self._predictions_old,  self._y_true, average='micro')
         return f1_new >= f1_old
     
     def get_params(self) -> dict:

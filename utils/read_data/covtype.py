@@ -7,18 +7,18 @@ from typing import Tuple
 
 
 
-def get_internet_ads_df(data_path='./data') -> Tuple[pd.DataFrame, pd.Series]:
-    zip_path = path.join(data_path, 'ADS/internet_ads.arff.zip')
+def get_covtype_dataset(data_path='./data') -> Tuple[pd.DataFrame, pd.Series]:
+    zip_path = path.join(data_path, 'COVTYPE/covtypeNorm.arff.zip')
     with (ZipFile(zip_path, 'r')) as zfile:
-        in_mem_fo = TextIOWrapper(BytesIO(zfile.read('internet_ads.arff')), encoding='ascii')
+        in_mem_fo = TextIOWrapper(BytesIO(zfile.read('covtypeNorm.arff')), encoding='ascii')
         data = loadarff(in_mem_fo)
         df = pd.DataFrame(data[0])
         to_convert_df = df.select_dtypes([object])
         to_convert_col_names = to_convert_df.columns
         df[to_convert_col_names] = to_convert_df.stack().str.decode('utf-8').unstack()
         class_col = df.pop('class').replace(['noad', 'ad'], [0, 1])
-        df[df.columns[3:]] = df.loc[:, "local":].astype(str).astype(int)
         df['target'] = class_col.copy()
-        df = df.sample(frac=1, random_state=125)
-        df['dataset'] = 'internet_ads'
+        df.loc[:, "Wilderness_Area1":] = df.loc[:, "Wilderness_Area1":].astype(str).astype(int)
+        df['dataset'] = 'covtypeNorm'
     return df
+    

@@ -46,3 +46,11 @@ class Logger(ILogger):
         with open(json_file_name, 'a') as f:
             default = lambda o: f"<<non-serializable: {type(o).__qualname__}>>"
             f.write(json.dumps(d, default=default))
+
+    def log_time(self, start_time, end_time, name='time'):
+        t = end_time - start_time
+        d = {'time [s]': t}
+        file_path = path.join(self._output_dir, f'{name}.json')
+        with open(file_path, 'a') as f:
+            default = lambda o: f"<<non-serializable: {type(o).__qualname__}>>"
+            f.write(json.dumps(d, default=default))

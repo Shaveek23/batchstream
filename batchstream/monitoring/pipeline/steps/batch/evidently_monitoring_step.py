@@ -29,7 +29,9 @@ class EvidentlyMonitoringStep(MonitoringStep):
        
     def monitor(self, history: HistoryManager) -> bool:
         report = None
+        is_drift = False
         if history._counter > self.min_instances and history._counter % self.clock == 0:
+            self._monitoring_logger.log_info(f'EvidentlyMonitoringStep - name:{self._name} - test at index: {history._counter} - START')
             ref, curr = self.monitoring_strategy.get_ref_curr(history)
             self.detector.run(reference_data=ref, current_data=curr)
             report = self.detector.as_dict()
@@ -37,8 +39,8 @@ class EvidentlyMonitoringStep(MonitoringStep):
             if is_drift:
                 self._monitoring_logger.log_info(f'Drift detected at: {history._counter}.')
                 self._monitoring_logger.log_drift_report(self.detector, history._counter)
-            return is_drift
-        return False
+            self._monitoring_logger.log_info(f'EvidentlyMonitoringStep - name:{self._name} - test at index: {history._counter} - END')
+        return is_drift
     
     def _decide_concept_drift(self, report: dict):
         any_failed = report['summary']['failed_tests'] > 0
