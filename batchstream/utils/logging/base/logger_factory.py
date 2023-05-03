@@ -16,3 +16,7 @@ class LoggerFactory:
     
     def get_logger(self, module_name: str) -> Logger:
         return Logger(self._experiment_id, module_name)
+    
+    def set_experiment_id(self, exp_id: str):
+        self._experiment_id = exp_id
+        

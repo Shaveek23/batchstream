@@ -42,7 +42,7 @@ class StreamExperiment:
         
     def _log_batch_results(self, eval_report: dict):
         self._results.append(eval_report)
-        if len(self._results) == 100:
+        if len(self._results) == 1_000:
             self._perf_logger.log_info(f'Logging a batch of {len(self._results)} reports.')
             self._perf_logger.log_eval_report(self._results)
             self._results.clear()

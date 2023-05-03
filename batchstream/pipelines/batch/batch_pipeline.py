@@ -65,7 +65,7 @@ class BatchPipeline(StreamPipeline):
         if self._history._last_retraining != None and self._history.counter - self._history._last_retraining < self._min_samples_retrain:
             return 
         detectors = self._output_drift_handlers if detector_type == 'out' else self._input_drift_handlers
-        if detectors == None or len(detectors) < 1:
+        if detectors == None or len(detectors) < 1 or detectors[0] == None:
             self._logger.log_info(f'Iter={self._history.counter}: _handle_drift_detectors: no ({detector_type}) detectors.')
             return
         for i in range(len(detectors)):
@@ -119,9 +119,9 @@ class BatchPipeline(StreamPipeline):
         return params
     
     def _get_drift_detectors_params(self, detectors) -> List:
-        if detectors == None or len(detectors) == 0:
-            return None
         if len(detectors) == 1:
+            if detectors[0] == None:
+                return None
             return [detectors[0].get_params()]
         return [d.get_params() for d in detectors]
         
