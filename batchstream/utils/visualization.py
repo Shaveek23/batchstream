@@ -116,7 +116,7 @@ def visualize_results(res, drift_hist, dataset_name, metrics=None):
         width=800,
         height=800,
     )
-    fig.write_image(file='fig3.jpg', format='jpg')
+    #fig.write_image(file='fig3.jpg', format='jpg')
 
     fig.show()
 

@@ -7,7 +7,7 @@ from utils.read_data.covtype import get_covtype_dataset
 
 
 
-NUM_WORKERS = 1
+NUM_WORKERS = 10
 
 def compose_experiments():
     df = get_covtype_dataset()
@@ -20,8 +20,7 @@ def compose_experiments():
 
 def main():
     args_list = compose_experiments()
-    print('ok')
-    #run_concurrent(args_list, NUM_WORKERS)
+    run_concurrent(args_list, NUM_WORKERS)
     
 if __name__ == "__main__":
     main()
