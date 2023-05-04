@@ -100,6 +100,7 @@ def visualize_results(res, drift_hist, dataset_name, metrics=None):
                                 ), row=p+1, col=1
                             )
                 showlegend = False
+        showlegend = False
         
     fig.update_layout(legend=dict(
         orientation="h",

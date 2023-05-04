@@ -1,11 +1,9 @@
 import pandas as pd
 from evidently.test_suite import TestSuite
-from evidently.test_preset import DataDriftTestPreset
 from evidently.tests import *
 from batchstream.history.base.history_manager import HistoryManager
 from batchstream.monitoring.pipeline.drift_monitoring_pipeline import DriftMonitoringPipeline
 from batchstream.monitoring.pipeline.steps.batch.evidently_monitoring_step import EvidentlyMonitoringStep
-from sklearn.datasets import load_breast_cancer
 from batchstream.utils.logging.base.logger_factory import LoggerFactory
 from batchstream.batch_monitoring_strategy.simple_monitoring_strategy import SimpleMonitoringStrategy
 from batchstream.retraining_strategy.simple_retraining_strategy import SimpleRetrainingStrategy 
@@ -19,13 +17,14 @@ from river.utils import Rolling
 from batchstream.evaluation.river_evaluation_pipeline import RiverEvaluationPipeline
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.pipeline import Pipeline
-from utils.read_data.covtype import get_covtype_dataset
 from datetime import datetime
+import uuid
 
 
 
-def get_rf_target_evidently_exp():
-    name = 'test_covtype_rf_target'
+def get_rf_target_evidently_exp(suffix, n_curr=5000, n_ref=5000, n_online=100, window_size=1000, n_first_fit=1000):
+    prefix = str(uuid.uuid4())[:8]
+    name = f'{prefix}_test_covtype_rf_target_{suffix}'
     exp_name = f'{name}_{datetime.today().strftime("%Y%m%d_%H%M%S")}'
     history = HistoryManager()
     logger_factory = LoggerFactory(exp_name)
@@ -37,21 +36,20 @@ def get_rf_target_evidently_exp():
     target_drift = TestSuite(tests=[
         TestColumnDrift(column_name='target'),
     ])
-    d2 = SimpleMonitoringStrategy(n_curr=5000, n_ref=5000, type='target')
-    ev2 = EvidentlyMonitoringStep(target_drift, d2, logger_factory, min_instances=5000, clock=5000, name='target_drift_eval')
+    d2 = SimpleMonitoringStrategy(n_curr=n_curr, n_ref=n_ref, type='target')
+    ev2 = EvidentlyMonitoringStep(target_drift, d2, logger_factory, min_instances=n_curr, clock=n_curr, name='target_drift_eval')
 
     input_monitoring = DriftMonitoringPipeline([(ev2._name, ev2)])
-    input_drift_retraining_strategy = SimpleRetrainingStrategy(n_last_retrain=5000, n_last_test=0)
+    input_drift_retraining_strategy = SimpleRetrainingStrategy(n_last_retrain=n_curr, n_last_test=0)
     input_detector = DriftHandler(input_monitoring, input_drift_retraining_strategy)
     ###
 
     ### Models comparison (after retraining)
-    model_comparer = ShadowOnlineComparer(n_online=100)
+    model_comparer = ShadowOnlineComparer(n_online=n_online)
     ###
 
 
     ### Model's Performance Evaluation
-    window_size = 1000
     eval_pipe = RiverEvaluationPipeline(metric_steps=[
         (f'acc_preq_{window_size}', Rolling(Accuracy(), window_size)),
         (f'macro_f1_preq_{window_size}', Rolling(MacroF1(), window_size)),
@@ -72,8 +70,8 @@ def get_rf_target_evidently_exp():
         history=history,
         logger_factory=logger_factory,
         model_comparer=model_comparer,
-        min_samples_retrain=5000,
-        min_samples_first_fit=1000
+        min_samples_retrain=n_curr,
+        min_samples_first_fit=n_first_fit
     )
     ###
 

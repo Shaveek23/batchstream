@@ -22,23 +22,29 @@ class StreamExperiment:
         self._stream_evaluation = pipeline_evaluation
         self._perf_logger: PerformanceEvalLogger = logger_factory.get_performance_logger()
         self._logger = logger_factory.get_logger('experiment_metadata')
+        self._logger_factory = logger_factory
         self._results: List[dict] = []
 
     def run(self, df: pd.DataFrame):
-        y = df.pop('target')
-        dataset = df.pop('dataset')[0]
-        df.columns = range(len(df.columns))
-        X = df
-        self._log_experiment_metadata(dataset)
-        start_time = time.time()
-        for xi, yi in tqdm(stream.iter_pandas(X, y)):
-            pred, probas = self._stream_pipeline.handle(xi, yi)
-            y_pred = int(pred)
-            eval_report = self._stream_evaluation.handle(yi, y_pred)
-            self._log_batch_results(eval_report)
-        end_time = time.time()
-        self._log_last_results()
-        self._perf_logger.log_time(start_time, end_time)
+        self._logger.log_info(f"START - experiment")
+        try:
+            y = df.pop('target')
+            dataset = df.pop('dataset')[0]
+            df.columns = range(len(df.columns))
+            X = df
+            self._log_experiment_metadata(dataset)
+            start_time = time.time()
+            for xi, yi in tqdm(stream.iter_pandas(X, y)):
+                pred, probas = self._stream_pipeline.handle(xi, yi)
+                y_pred = int(pred)
+                eval_report = self._stream_evaluation.handle(yi, y_pred)
+                self._log_batch_results(eval_report)
+            end_time = time.time()
+            self._log_last_results()
+            self._perf_logger.log_time(start_time, end_time)
+        except Exception as e:
+            self._logger.log_exception(e)
+        self._logger.log_info(f"END - experiment")
         
     def _log_batch_results(self, eval_report: dict):
         self._results.append(eval_report)
