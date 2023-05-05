@@ -36,7 +36,7 @@ class StreamExperiment:
             start_time = time.time()
             for xi, yi in tqdm(stream.iter_pandas(X, y)):
                 pred, probas = self._stream_pipeline.handle(xi, yi)
-                y_pred = int(pred)
+                y_pred =  -1 if pred is None else int(pred)
                 eval_report = self._stream_evaluation.handle(yi, y_pred)
                 self._log_batch_results(eval_report)
             end_time = time.time()
