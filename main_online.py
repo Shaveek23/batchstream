@@ -5,7 +5,7 @@ import uuid
 
 
 
-NUM_WORKERS = 10
+NUM_WORKERS = 5
 
 def compose_experiments():
 
