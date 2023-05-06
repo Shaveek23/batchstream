@@ -71,7 +71,7 @@ def compose_experiments(dataset_name):
 
 def main():
     args_list = compose_experiments('elec')
-    #run_concurrent(args_list, NUM_WORKERS)
+    run_concurrent(args_list, NUM_WORKERS)
     
 if __name__ == "__main__":
     main()
