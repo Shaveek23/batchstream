@@ -32,16 +32,16 @@ def main():
 
     ### INPUT DRIFT DETECTION
     # Detector 1.1 - Data Drift
-    data_drift_test_suite = TestSuite(tests=[
+    data_drift_test_suite = {'tests': [
     DataDriftTestPreset(),
-    ])
+    ]}
     d1 = SimpleMonitoringStrategy(n_curr=5000, n_ref=5000)
     ev1 = EvidentlyMonitoringStep(data_drift_test_suite, d1, logger_factory, min_instances=5000, clock=5000, name='data_drift_eval')
 
     # Detector 1.2 - Target Drift
-    target_drift = TestSuite(tests=[
+    target_drift = {'tests': [
         TestColumnDrift(column_name='target'),
-    ])
+    ]}
     d2 = SimpleMonitoringStrategy(n_curr=5000, n_ref=5000, type='target')
     ev2 = EvidentlyMonitoringStep(target_drift, d2, logger_factory, min_instances=5000, clock=5000, name='target_drift_eval')
 
@@ -56,12 +56,12 @@ def main():
     ### OUTPUT (PERFORMANCE) DRIFT DETECTION
     # Detector 2.1 - Performance Drift
 
-    performance_drift = TestSuite(tests=[
+    performance_drift = {'tests': [
         TestPrecisionScore(),
         TestRecallScore(),
         TestF1Score(),
         TestAccuracyScore()
-    ])
+    ]}
     d3 = SimpleMonitoringStrategy(n_curr=5000, n_ref=5000, type='prediction')
     ev3 = EvidentlyMonitoringStep(performance_drift, d3, logger_factory, min_instances=5000, clock=5000, name='performance_drift_eval')
 

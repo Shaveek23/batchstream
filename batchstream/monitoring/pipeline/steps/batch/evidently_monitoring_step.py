@@ -1,4 +1,5 @@
 from evidently.test_suite import TestSuite
+from typing import Dict
 from ..base.monitoring_step import MonitoringStep
 from .....history.base.history_manager import HistoryManager
 from .....batch_monitoring_strategy.base.batch_monitoring_strategy import BatchMonitoringStrategy
@@ -10,7 +11,7 @@ class EvidentlyMonitoringStep(MonitoringStep):
 
     def __init__(
             self,
-            evidently_test_suite: TestSuite, 
+            evidently_test_suite_args: Dict, 
             monitoring_strategy: BatchMonitoringStrategy, 
             logger_factory: LoggerFactory,
             min_instances: int=30, 
@@ -18,7 +19,8 @@ class EvidentlyMonitoringStep(MonitoringStep):
             detect_condition:str='any',
             name: str=None
         ):
-        self.detector = evidently_test_suite
+        self.detector_args = evidently_test_suite_args
+        self.detector = TestSuite(**self.detector_args)
         self.monitoring_strategy = monitoring_strategy
         self.min_instances = min_instances
         self.clock = clock
@@ -33,8 +35,7 @@ class EvidentlyMonitoringStep(MonitoringStep):
         if history._counter > self.min_instances and history._counter % self.clock == 0:
             self._monitoring_logger.log_info(f'EvidentlyMonitoringStep - name:{self._name} - test at index: {history._counter} - START')
             ref, curr = self.monitoring_strategy.get_ref_curr(history)
-            self.detector.run(reference_data=ref, current_data=curr)
-            report = self.detector.as_dict()
+            report = self._perform_test(ref, curr)
             is_drift = self._decide_concept_drift(report)
             if is_drift:
                 self._monitoring_logger.log_info(f'Drift detected at: {history._counter}.')
@@ -42,7 +43,16 @@ class EvidentlyMonitoringStep(MonitoringStep):
             self._monitoring_logger.log_info(f'EvidentlyMonitoringStep - name:{self._name} - test at index: {history._counter} - END')
         return is_drift
     
+    def _perform_test(self, ref, curr):
+        ref.columns = [f"{i}" for i in range(len(ref.columns))]
+        curr.columns = [f"{i}" for i in range(len(curr.columns))]
+        self.detector = TestSuite(**self.detector_args)
+        self.detector.run(reference_data=ref, current_data=curr)
+        return self.detector.as_dict()
+    
     def _decide_concept_drift(self, report: dict):
+        if 'ERROR' in report['summary']['by_status'] and report['summary']['by_status']['ERROR'] > 0:
+            self._monitoring_logger.log_warn('ERROR status in the tests!')
         any_failed = report['summary']['failed_tests'] > 0
         all_failed = report['summary']['failed_tests'] == report['summary']['total_tests']
         if self.detect_condition == 'all':

@@ -32,12 +32,12 @@ def get_rf_perf_evidently_exp(suffix, n_curr=5000, n_ref=5000, n_online=100, win
     ### OUTPUT (PERFORMANCE) DRIFT DETECTION
     # Detector 2.1 - Performance Drift
 
-    performance_drift = TestSuite(tests=[
+    performance_drift = {'tests': [
         TestPrecisionScore(),
         TestRecallScore(),
         TestF1Score(),
         TestAccuracyScore()
-    ])
+    ]}
     d3 = SimpleMonitoringStrategy(n_curr=n_curr, n_ref=n_ref, type='prediction')
     ev3 = EvidentlyMonitoringStep(performance_drift, d3, logger_factory, min_instances=n_ref, clock=n_ref, name='performance_drift_eval')
 

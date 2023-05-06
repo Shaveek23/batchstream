@@ -32,9 +32,9 @@ def get_rf_data_evidently_exp(suffix, n_curr=5000, n_ref=5000, n_online=100, win
 
     ### INPUT DRIFT DETECTION
     # Detector 1.1 - Data Drift
-    data_drift_test_suite = TestSuite(tests=[
-    DataDriftTestPreset(),
-    ])
+    data_drift_test_suite = {'tests': [
+        DataDriftTestPreset(stattest='wasserstein', stattest_threshold=0.05)
+    ]}
     d1 = SimpleMonitoringStrategy(n_curr=n_curr, n_ref=n_ref)
     ev1 = EvidentlyMonitoringStep(data_drift_test_suite, d1, logger_factory, min_instances=n_curr, clock=n_curr, name='data_drift_eval')
 

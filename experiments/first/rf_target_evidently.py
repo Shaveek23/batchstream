@@ -33,9 +33,9 @@ def get_rf_target_evidently_exp(suffix, n_curr=5000, n_ref=5000, n_online=100, w
     ### INPUT DRIFT DETECTION
     
     # Detector 1.1 - Target Drift
-    target_drift = TestSuite(tests=[
+    target_drift = {'tests': [
         TestColumnDrift(column_name='target'),
-    ])
+    ]}
     d2 = SimpleMonitoringStrategy(n_curr=n_curr, n_ref=n_ref, type='target')
     ev2 = EvidentlyMonitoringStep(target_drift, d2, logger_factory, min_instances=n_curr, clock=n_curr, name='target_drift_eval')
 
