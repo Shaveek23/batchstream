@@ -7,7 +7,7 @@ from typing import Tuple
 
 
 
-def get_covtype_dataset(data_path='./data') -> Tuple[pd.DataFrame, pd.Series]:
+def get_covtype_df(data_path='./data') -> Tuple[pd.DataFrame, pd.Series]:
     zip_path = path.join(data_path, 'COVTYPE/covtypeNorm.arff.zip')
     with (ZipFile(zip_path, 'r')) as zfile:
         in_mem_fo = TextIOWrapper(BytesIO(zfile.read('covtypeNorm.arff')), encoding='ascii')

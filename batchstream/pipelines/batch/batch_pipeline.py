@@ -66,7 +66,6 @@ class BatchPipeline(StreamPipeline):
             return 
         detectors = self._output_drift_handlers if detector_type == 'out' else self._input_drift_handlers
         if detectors == None or len(detectors) < 1 or detectors[0] == None:
-            self._logger.log_info(f'Iter={self._history.counter}: _handle_drift_detectors: no ({detector_type}) detectors.')
             return
         for i in range(len(detectors)):
            d: DriftHandler = detectors[i]
