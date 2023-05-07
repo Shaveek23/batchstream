@@ -22,7 +22,8 @@ import uuid
 
 
 
-def get_rf_all_evidently_exp(suffix, n_curr=5000, n_ref=5000, n_online=100, window_size=1000, n_first_fit=1000):
+def get_rf_all_evidently_exp(suffix, n_curr=5000, n_ref=5000, n_online=100, window_size=1000, n_first_fit=1000,
+        data_stattest_threshold=None, target_stattest_threshold=None):
     prefix = str(uuid.uuid4())[:8]
     name = f'{prefix}_rf_all_evidently_{suffix}'
     exp_name = f'{name}_{datetime.today().strftime("%Y%m%d_%H%M%S")}'
@@ -33,14 +34,14 @@ def get_rf_all_evidently_exp(suffix, n_curr=5000, n_ref=5000, n_online=100, wind
     ### INPUT DRIFT DETECTION
     # Detector 1.1 - Data Drift
     data_drift_test_suite = {'tests': [
-    DataDriftTestPreset(),
+    DataDriftTestPreset(stattest_threshold=data_stattest_threshold),
     ]}
     d1 = SimpleMonitoringStrategy(n_curr=n_curr, n_ref=n_ref)
     ev1 = EvidentlyMonitoringStep(data_drift_test_suite, d1, logger_factory, min_instances=n_curr, clock=n_curr, name='data_drift_eval')
 
     # Detector 1.2 - Target Drift
     target_drift = {'tests': [
-        TestColumnDrift(column_name='target'),
+        TestColumnDrift(column_name='target', stattest_threshold=target_stattest_threshold),
     ]}
     d2 = SimpleMonitoringStrategy(n_curr=n_curr, n_ref=n_ref, type='target')
     ev2 = EvidentlyMonitoringStep(target_drift, d2, logger_factory, min_instances=n_curr, clock=n_curr, name='target_drift_eval')

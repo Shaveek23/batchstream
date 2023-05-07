@@ -22,7 +22,7 @@ import uuid
 
 
 
-def get_rf_data_evidently_exp(suffix, n_curr=5000, n_ref=5000, n_online=100, window_size=1000, n_first_fit=1000):
+def get_rf_data_evidently_exp(suffix, n_curr=5000, n_ref=5000, n_online=100, window_size=1000, n_first_fit=1000, stattest_threshold=None):
     prefix = str(uuid.uuid4())[:8]
     name = f'{prefix}_test_rf_data_evidently_{suffix}'
     exp_name = f'{name}_{datetime.today().strftime("%Y%m%d_%H%M%S")}'
@@ -33,7 +33,7 @@ def get_rf_data_evidently_exp(suffix, n_curr=5000, n_ref=5000, n_online=100, win
     ### INPUT DRIFT DETECTION
     # Detector 1.1 - Data Drift
     data_drift_test_suite = {'tests': [
-        DataDriftTestPreset(stattest='wasserstein', stattest_threshold=0.05)
+        DataDriftTestPreset(stattest_threshold=stattest_threshold)
     ]}
     d1 = SimpleMonitoringStrategy(n_curr=n_curr, n_ref=n_ref)
     ev1 = EvidentlyMonitoringStep(data_drift_test_suite, d1, logger_factory, min_instances=n_curr, clock=n_curr, name='data_drift_eval')
