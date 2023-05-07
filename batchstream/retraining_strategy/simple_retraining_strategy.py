@@ -1,5 +1,5 @@
 import pandas as pd
-from typing import Tuple, Dict
+from typing import Tuple, Dict, List
 from ..history.base.history_manager import HistoryManager
 from .base.retraining_strategy import RetrainingStrategy
 
@@ -11,15 +11,15 @@ class SimpleRetrainingStrategy(RetrainingStrategy):
         self._n_last_retrain = n_last_retrain
         self._n_last_test = n_last_test
     
-    def get_retraining_data(self, history: HistoryManager) -> Tuple[pd.DataFrame, pd.Series, Dict]:
+    def get_retraining_data(self, history: HistoryManager) -> Tuple[List[Dict], List, Dict]:
         if self._n_last_test == None or self._n_last_test == 0:
-            return  history.x_history.iloc[:-1, :].iloc[-self._n_last_retrain:, :], history.y_history.iloc[-self._n_last_retrain:], {}
-        return history.x_history.iloc[:-1, :].iloc[-self._n_last_retrain:-self._n_last_test, :], history.y_history.iloc[-self._n_last_retrain:-self._n_last_test], {}
+            return  history.x_history[:-1][-self._n_last_retrain:], history.y_history[-self._n_last_retrain:], {}
+        return history.x_history[:-1][-self._n_last_retrain:-self._n_last_test], history.y_history[-self._n_last_retrain:-self._n_last_test], {}
 
     def get_retest_data(self, history: HistoryManager) -> Tuple[pd.DataFrame, pd.Series]:
         if self._n_last_test == None or self._n_last_test == 0:
             return None, None
-        return history.x_history.iloc[:-1, :].iloc[-self._n_last_test:, :], history.y_history.iloc[-self._n_last_test:]
+        return history.x_history[:-1][-self._n_last_test:], history.y_history[-self._n_last_test:]
     
     def get_params(self) -> dict:
         return {

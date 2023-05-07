@@ -47,43 +47,35 @@ class HistoryManager:
     def flush(self):
         if self._counter % self._n_flush_clock == 0 and self._counter != 0:
             self._flush_x_history()
-            self._y_history = self._y_history[-(self._n_to_stay):]
-            self._prediction_history = self._prediction_history[-(self._n_to_stay):]
+            self._y_history = self.y_history.iloc[-(self._n_to_stay):].to_list()
+            self._prediction_history = self.prediction_history[-(self._n_to_stay):].to_list()
 
     def _flush_x_history(self):
-        self._first_index = self._counter - self._n_to_stay
-        self._x_history = self._x_history[-(self._n_to_stay):]
+        x_flushed = self.x_history.iloc[-(self._n_to_stay):, :]
+        self._first_index = x_flushed.index.min()
+        self._x_history = x_flushed.to_dict('records')
 
-    def get_x_history_as_pd(self) -> pd.DataFrame:
-        df = pd.DataFrame(self._x_history)
-        df.index = range(self._first_index, len(df) + self._first_index)
-        return df
-
-    def get_y_history_as_pd(self) -> pd.Series:
-        y = pd.Series(self._y_history, dtype=self._y_dtype)
-        y.index = range(self._first_index, len(y) + self._first_index)
-        return y
-
-    def get_prediction_history_as_pd(self) -> pd.Series:
-        y_pred = pd.Series(self._prediction_history, dtype=self._y_dtype)
-        y_pred.index = range(self._first_index, len(y_pred) + self._first_index)
-        return y_pred
-    
     @property
     def counter(self) -> int:
         return self._counter
     
     @property
-    def x_history(self) -> List[Dict]:
-        return self._x_history
+    def x_history(self) -> pd.DataFrame:
+        df = pd.DataFrame(self._x_history)
+        df.index = range(self._first_index, len(df) + self._first_index)
+        return df
 
     @property
-    def y_history(self) -> List[Dict]:
-        return self._y_history
+    def y_history(self) -> pd.Series:
+        y = pd.Series(self._y_history, dtype=self._y_dtype)
+        y.index = range(self._first_index, len(y) + self._first_index)
+        return y
 
     @property
-    def prediction_history(self) -> List:
-        return self._prediction_history
+    def prediction_history(self) -> pd.Series:
+        y_pred = pd.Series(self._prediction_history, dtype=self._y_dtype)
+        y_pred.index = range(self._first_index, len(y_pred) + self._first_index)
+        return y_pred
 
     @property
     def drift_history(self) -> List[List[int]]:

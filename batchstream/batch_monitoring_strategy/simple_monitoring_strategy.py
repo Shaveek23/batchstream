@@ -13,15 +13,15 @@ class SimpleMonitoringStrategy(BatchMonitoringStrategy):
 
     def get_ref_curr(self, history: HistoryManager):
         if self.type == 'data':
-            df = history.x_history
+            df = history.get_x_history_as_pd()
             return df.iloc[-(self.n_curr + self.n_ref):-self.n_curr, :], df.iloc[-self.n_curr:, :]
         elif self.type == 'target':
-            target = history.y_history
+            target = history.get_y_history_as_pd()
             ref = target.iloc[-(self.n_curr + self.n_ref):-self.n_curr]
             curr = target.iloc[-self.n_curr:] 
             return pd.DataFrame(ref, columns=['target']), pd.DataFrame(curr, columns=['target'])
         elif self.type == 'prediction':
-            prediction = history.prediction_history
+            prediction = history.get_prediction_history_as_pd()
             ref = prediction.iloc[-(self.n_curr + self.n_ref):-self.n_curr]
             curr = prediction.iloc[-self.n_curr:] 
             return pd.DataFrame(ref, columns=['prediction']), pd.DataFrame(curr, columns=['prediction'])

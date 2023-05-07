@@ -28,9 +28,9 @@ class RiverMonitoringStep(MonitoringStep):
         col_name = self._name.replace(self._name_prefix, "")
 
         if col_name != 'target':
-            num = history.x_history.iloc[-1].loc[self._col_idx]
+            num = history.x_history[-1][self._col_idx]
         else:
-            num = history.y_history.iloc[-1]
+            num = history.y_history[-1]
         self.detector.update(num)
 
     def _prepare_test_output(self, is_drift_detected: bool, detection_idx: int):

@@ -50,7 +50,9 @@ class BatchPipeline(StreamPipeline):
             return True
         if self._history.counter == self._min_samples_first_fit:
             self._logger.log_info(f'Iter={self._history.counter} First fitting of the batch model.')
-            self._estimator.first_fit(self._history.x_history, self._history.y_history)
+            X = self._history.get_x_history_as_pd()
+            Y = self._history.get_y_history_as_pd()
+            self._estimator.first_fit(X, Y)
         return False
     
     def _make_result_when_not_fit(self, x, y) -> int:
