@@ -11,7 +11,7 @@ from sklearn.model_selection import ParameterSampler
 
 
 
-NUM_WORKERS = 1
+NUM_WORKERS = 54
 
 def compose_evidently_experiments(dataset_name):
     suffix = f"{str(uuid.uuid4())[:4]}_{dataset_name}"
@@ -19,8 +19,8 @@ def compose_evidently_experiments(dataset_name):
     args_list = []
 
     # COMMON HYPERPARAMETERS
-    window_size = 100
-    n_first_fit = 1000
+    window_size = 1000
+    n_first_fit = 500
 
     param_grid = {
         'n_curr': [1000, 5000, 2500, 10_000],
@@ -66,7 +66,7 @@ def compose_adwin_experiments(dataset_name):
     return args_list
 
 def main():
-    args_list = compose_adwin_experiments('rbf66')
+    args_list = compose_evidently_experiments('rbf66')
     run_concurrent(args_list, NUM_WORKERS)
     
 if __name__ == "__main__":
