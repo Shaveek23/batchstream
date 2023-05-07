@@ -66,7 +66,7 @@ def compose_adwin_experiments(dataset_name):
     return args_list
 
 def main():
-    args_list = compose_evidently_experiments('rbf66')
+    args_list = compose_adwin_experiments('rbf66')
     run_concurrent(args_list, NUM_WORKERS)
     
 if __name__ == "__main__":

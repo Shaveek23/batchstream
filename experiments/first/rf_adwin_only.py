@@ -26,7 +26,7 @@ import uuid
 
 
 
-def get_rf_adwin_only_exp(df, suffix, clock=5000, grace_period=5000, min_window_length=1000, n_online=100, windows_size=1000, n_first_fit=1000):
+def get_rf_adwin_only_exp(df, suffix, clock=5000, grace_period=5000, min_window_length=1000, n_online=100, window_size=1000, n_first_fit=1000, delta=None):
     prefix = str(uuid.uuid4())[:8]
     name = f'{prefix}_rf_adwin_only_{suffix}'
     exp_name = f'{name}_{datetime.today().strftime("%Y%m%d_%H%M%S")}'
@@ -42,7 +42,7 @@ def get_rf_adwin_only_exp(df, suffix, clock=5000, grace_period=5000, min_window_
     for col in df.columns:
         if col == 'dataset': continue
         if col == 'target': continue
-        adwin = RiverMonitoringStep(col, j, drift.ADWIN(clock=clock, grace_period=grace_period, min_window_length=min_window_length), logger_factory)
+        adwin = RiverMonitoringStep(col, j, drift.ADWIN(clock=clock, grace_period=grace_period, min_window_length=min_window_length, delta=delta), logger_factory)
         adwins.append(adwin)
         j += 1
 
@@ -57,7 +57,6 @@ def get_rf_adwin_only_exp(df, suffix, clock=5000, grace_period=5000, min_window_
 
 
     ### Model's Performance Evaluation
-    window_size = windows_size
     eval_pipe = RiverEvaluationPipeline(metric_steps=[
         (f'acc_preq_{window_size}', Rolling(Accuracy(), window_size)),
         (f'macro_f1_preq_{window_size}', Rolling(MacroF1(), window_size)),

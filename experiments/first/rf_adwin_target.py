@@ -26,7 +26,7 @@ import uuid
 
 
 
-def get_rf_adwin_target_exp(df, suffix, clock=5000, grace_period=5000, min_window_length=1000, n_online=100, window_size=1000, n_first_fit=1000):
+def get_rf_adwin_target_exp(df, suffix, clock=5000, grace_period=5000, min_window_length=1000, n_online=100, window_size=1000, n_first_fit=1000, delta=None):
     prefix = str(uuid.uuid4())[:8]
     name = f'{prefix}_rf_adwin_target_{suffix}'
     exp_name = f'{name}_{datetime.today().strftime("%Y%m%d_%H%M%S")}'
@@ -37,7 +37,7 @@ def get_rf_adwin_target_exp(df, suffix, clock=5000, grace_period=5000, min_windo
     ### INPUT DRIFT DETECTION
     # Detector 1.1 - ADWIN
     
-    adwin = RiverMonitoringStep('target', -1, drift.ADWIN(clock=clock, grace_period=grace_period, min_window_length=min_window_length), logger_factory)
+    adwin = RiverMonitoringStep('target', -1, drift.ADWIN(clock=clock, grace_period=grace_period, min_window_length=min_window_length, delta=delta), logger_factory)
     input_monitoring = DriftMonitoringPipeline([(adwin._name, adwin)])
     input_drift_retraining_strategy = SimpleRetrainingStrategy(n_last_retrain=clock, n_last_test=0)
     input_detector = DriftHandler(input_monitoring, input_drift_retraining_strategy)

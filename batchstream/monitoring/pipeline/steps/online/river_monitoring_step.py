@@ -16,7 +16,7 @@ class RiverMonitoringStep(MonitoringStep):
         self._monitoring_logger = logger_factory.get_monitoring_logger(self._name, as_html=False)
 
     def monitor(self, history: HistoryManager) -> bool:  
-        self._update_adwin(history)
+        self._update_detector(history)
         is_drift_detected = self.detector.drift_detected
         test_report = self._prepare_test_output(is_drift_detected=is_drift_detected, detection_idx=history._counter)
         if is_drift_detected:
@@ -24,10 +24,11 @@ class RiverMonitoringStep(MonitoringStep):
             self._monitoring_logger.log_drift_report(test_report, history._counter)
         return is_drift_detected
 
-    def _update_adwin(self, history: HistoryManager):
+    def _update_detector(self, history: HistoryManager):
+        if len(history.x_history) < 1: return 
         col_name = self._name.replace(self._name_prefix, "")
 
-        if col_name != 'target':
+        if 'target' not in col_name:
             num = history.x_history[-1][self._col_idx]
         else:
             num = history.y_history[-1]
