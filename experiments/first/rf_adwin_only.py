@@ -38,11 +38,13 @@ def get_rf_adwin_only_exp(df, suffix, clock=5000, grace_period=5000, min_window_
     # Detector 1.1 - ADWIN
     
     adwins = []
+    j = 0
     for col in df.columns:
         if col == 'dataset': continue
         if col == 'target': continue
-        adwin = RiverMonitoringStep(col, drift.ADWIN(clock=clock, grace_period=grace_period, min_window_length=min_window_length), logger_factory)
+        adwin = RiverMonitoringStep(col, j, drift.ADWIN(clock=clock, grace_period=grace_period, min_window_length=min_window_length), logger_factory)
         adwins.append(adwin)
+        j += 1
 
     input_monitoring = DriftMonitoringPipeline([(a._name, a) for a in adwins])
     input_drift_retraining_strategy = SimpleRetrainingStrategy(n_last_retrain=clock, n_last_test=0)

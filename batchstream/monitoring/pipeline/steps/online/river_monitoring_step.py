@@ -8,13 +8,15 @@ from batchstream.history.base.history_manager import HistoryManager
 
 class RiverMonitoringStep(MonitoringStep):
 
-    def __init__(self, step_name: str, river_detector: DriftDetector, logger_factory: LoggerFactory):
+    def __init__(self, step_name: str, col_idx: int, river_detector: DriftDetector, logger_factory: LoggerFactory):
         self.detector: DriftDetector = river_detector
-        self._name_prefix = 'river-detector_ADWIN_'
-        self._name: str = f'{self._name_prefix}{step_name}'
+        self._name_prefix = 'river-detector_ADWIN'
+        self._col_idx = col_idx
+        self._name: str = f'{self._name_prefix}{col_idx}__{step_name}'
         self._monitoring_logger = logger_factory.get_monitoring_logger(self._name, as_html=False)
 
-    def monitor(self, history: HistoryManager) -> bool:    
+    def monitor(self, history: HistoryManager) -> bool:  
+        self._update_adwin(history)
         is_drift_detected = self.detector.drift_detected
         test_report = self._prepare_test_output(is_drift_detected=is_drift_detected, detection_idx=history._counter)
         if is_drift_detected:
@@ -26,7 +28,7 @@ class RiverMonitoringStep(MonitoringStep):
         col_name = self._name.replace(self._name_prefix, "")
 
         if col_name != 'target':
-            num = history.x_history.iloc[-1].loc[col_name]
+            num = history.x_history.iloc[-1].loc[self._col_idx]
         else:
             num = history.y_history.iloc[-1]
         self.detector.update(num)
