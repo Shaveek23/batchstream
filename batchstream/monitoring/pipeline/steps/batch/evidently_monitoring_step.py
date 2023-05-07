@@ -42,8 +42,10 @@ class EvidentlyMonitoringStep(MonitoringStep):
         return is_drift
     
     def _perform_test(self, ref, curr):
-        ref.columns = [f"{i}" for i in range(len(ref.columns))]
-        curr.columns = [f"{i}" for i in range(len(curr.columns))]
+        if 'target' not in ref.columns and 'prediction' not in ref.columns:
+            ref.columns = [f"{i}" for i in range(len(ref.columns))]
+            curr.columns = [f"{i}" for i in range(len(curr.columns))]
+
         self.detector = TestSuite(**self.detector_args)
         self.detector.run(reference_data=ref, current_data=curr)
         return self.detector.as_dict()

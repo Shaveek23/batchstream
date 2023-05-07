@@ -61,6 +61,7 @@ class BatchPipeline(StreamPipeline):
             pred = self._history.y_history.iloc[-1]
         self._history.update_history_x(x)
         self._history.update_history_y(y)
+        self._history.update_predictions(pred)
         return pred, None
         
     def _handle_drift_detectors(self, detector_type: str='out'):

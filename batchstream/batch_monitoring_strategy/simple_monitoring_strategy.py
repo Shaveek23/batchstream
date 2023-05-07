@@ -21,10 +21,15 @@ class SimpleMonitoringStrategy(BatchMonitoringStrategy):
             curr = target.iloc[-self.n_curr:] 
             return pd.DataFrame(ref, columns=['target']), pd.DataFrame(curr, columns=['target'])
         elif self.type == 'prediction':
-            prediction = history.get_prediction_history_as_pd()
-            ref = prediction.iloc[-(self.n_curr + self.n_ref):-self.n_curr]
-            curr = prediction.iloc[-self.n_curr:] 
-            return pd.DataFrame(ref, columns=['prediction']), pd.DataFrame(curr, columns=['prediction'])
+            target = history.get_y_history_as_pd().reset_index(drop=True)
+            prediction = history.get_prediction_history_as_pd().reset_index(drop=True)
+            ref_pred = prediction.iloc[-(self.n_curr + self.n_ref):-self.n_curr]
+            curr_pred = prediction.iloc[-self.n_curr:] 
+            ref_target = target.iloc[-(self.n_curr + self.n_ref):-self.n_curr]
+            curr_target = target.iloc[-self.n_curr:] 
+            ref = pd.DataFrame({'prediction': ref_pred, 'target': ref_target})
+            curr = pd.DataFrame({'prediction': curr_pred, 'target': curr_target})
+            return ref, curr
         return None, None
 
     def get_params(self) -> dict:
