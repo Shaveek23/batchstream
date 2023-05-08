@@ -32,13 +32,13 @@ def compose_evidently_experiments(dataset_name):
         n_curr = samples['n_curr']
         n_ref = n_curr
         stattest_threshold = samples['stattest_threshold']
-        # args_list.append((get_rf_target_evidently_exp(suffix=suffix, window_size=window_size, n_ref=n_ref, n_first_fit=n_first_fit,
-        #                                             stattest_threshold=stattest_threshold), df))
-        # args_list.append((get_rf_data_evidently_exp(suffix=suffix, window_size=window_size, n_ref=n_ref, n_first_fit=n_first_fit, 
-        #                                             stattest_threshold=stattest_threshold), df))
-        # args_list.append((get_rf_perf_evidently_exp(suffix=suffix, window_size=window_size, n_ref=n_ref, n_first_fit=n_first_fit), df))
+        args_list.append((get_rf_target_evidently_exp(suffix=suffix, window_size=window_size, n_ref=n_ref, n_first_fit=n_first_fit,
+                                                    stattest_threshold=stattest_threshold), df))
+        args_list.append((get_rf_data_evidently_exp(suffix=suffix, window_size=window_size, n_ref=n_ref, n_first_fit=n_first_fit, 
+                                                    stattest_threshold=stattest_threshold), df))
+        args_list.append((get_rf_perf_evidently_exp(suffix=suffix, window_size=window_size, n_ref=n_ref, n_first_fit=n_first_fit), df))
         args_list.append((get_rf_all_evidently_exp(suffix=suffix, window_size=window_size, n_ref=n_ref, n_first_fit=n_first_fit, 
-                                                   data_stattest_threshold=stattest_threshold, target_stattest_threshold=stattest_threshold)))
+                                                   data_stattest_threshold=stattest_threshold, target_stattest_threshold=stattest_threshold), df))
     return args_list
 
 def compose_adwin_experiments(dataset_name):
@@ -66,7 +66,8 @@ def compose_adwin_experiments(dataset_name):
     return args_list
 
 def main():
-    args_list = compose_evidently_experiments('rbf66')
+    args_list = compose_evidently_experiments('elec')
+    args_list += compose_adwin_experiments('elec')
     run_concurrent(args_list, NUM_WORKERS)
     
 if __name__ == "__main__":

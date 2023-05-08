@@ -1,5 +1,6 @@
 from typing import List, Tuple
 from river.utils import dict2numpy
+from collections import Counter
 from ..base.stream_pipeline import StreamPipeline
 from ...drift_handlers.base.drift_handler import DriftHandler
 from ...history.base.history_manager import HistoryManager
@@ -20,8 +21,9 @@ class BatchPipeline(StreamPipeline):
             model_comparer: ModelComparer = None,
             min_samples_retrain: int = 32,
             min_samples_first_fit: int = 32,
-            initial_return: str = 'minus_one'
+            initial_return: str = 'majority'
         ) -> None:
+        self._counter = Counter()
         self._estimator = batch_model
         self._comparer = model_comparer
         self._history = history
@@ -59,11 +61,19 @@ class BatchPipeline(StreamPipeline):
         pred = -1
         if self._initial_return == 'last_label':
             pred = self._history.y_history.iloc[-1]
+        if self._initial_return == 'majority':
+            pred = self._majority_classifier(y)
         self._history.update_history_x(x)
         self._history.update_history_y(y)
         self._history.update_predictions(pred)
         return pred, None
-        
+    
+    def _majority_classifier(self, y) -> int:
+        if self._counter.total() == 0: return 0
+        pred = self._counter.most_common(n=1)[0][0]
+        self._counter[y] += 1
+        return pred
+     
     def _handle_drift_detectors(self, detector_type: str='out'):
         if self._history._last_retraining != None and self._history.counter - self._history._last_retraining < self._min_samples_retrain:
             return 
