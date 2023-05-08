@@ -1,4 +1,4 @@
-#!/bin/bash                                                                        start.sh#!/bin/bash
+#!/bin/bash
 
 #SBATCH --job-name=attnt
 #SBATCH --cpus-per-task=54
