@@ -46,6 +46,7 @@ def visualize_results(res, drift_hist, dataset_name, metrics=None):
     x_parts, res_parts = get_partitions(num_parts, x, res)
 
     showlegend = True
+    shown_drifts = set()
     for p in range(num_parts):
         x_part = x_parts[p]
         res_part = res_parts[p]
@@ -83,13 +84,15 @@ def visualize_results(res, drift_hist, dataset_name, metrics=None):
             color = colors[i]
             indices = [int(d) for d in indices if int(d) >= x_part[0] and int(d) < x_part[-1]]
             for idx in indices:
+                showlegend_drift = False if drift_type in shown_drifts else True
+                shown_drifts.add(drift_type)
                 fig.add_trace(go.Scatter(x=[idx, idx], 
                                 y=[dmin, dmax], 
                                 mode='lines', 
                                 line=dict(color=color, width=2, dash='dash'),
                                 legendgroup="group2",
                                 legendgrouptitle_text="Drift type",
-                                showlegend=showlegend, 
+                                showlegend=showlegend_drift, 
                                 name=f"{drift_type.split('_')[0]}"
                                 # text=[format_int_K(idx), ""],
                                 # textposition=[f"bottom {pos}", "top center"],
@@ -99,7 +102,6 @@ def visualize_results(res, drift_hist, dataset_name, metrics=None):
                                 #     },
                                 ), row=p+1, col=1
                             )
-                showlegend = False
         showlegend = False
         
     fig.update_layout(legend=dict(

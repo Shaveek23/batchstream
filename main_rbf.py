@@ -11,7 +11,7 @@ from sklearn.model_selection import ParameterSampler
 
 
 
-NUM_WORKERS = 54
+NUM_WORKERS = 16
 
 def compose_evidently_experiments(dataset_name):
     suffix = f"{str(uuid.uuid4())[:4]}_{dataset_name}"
@@ -26,17 +26,17 @@ def compose_evidently_experiments(dataset_name):
         'n_curr': [1000, 5000, 2500, 10_000],
         'stattest_threshold': [0.038, 0.04, 0.043]
     }
-    samples = list(ParameterSampler(param_grid, n_iter=10, random_state=42))
+    samples = list(ParameterSampler(param_grid, n_iter=12, random_state=42))
 
     for samples in samples:
         n_curr = samples['n_curr']
         n_ref = n_curr
         stattest_threshold = samples['stattest_threshold']
-        args_list.append((get_rf_target_evidently_exp(suffix=suffix, window_size=window_size, n_ref=n_ref, n_first_fit=n_first_fit,
-                                                    stattest_threshold=stattest_threshold), df))
-        args_list.append((get_rf_data_evidently_exp(suffix=suffix, window_size=window_size, n_ref=n_ref, n_first_fit=n_first_fit, 
-                                                    stattest_threshold=stattest_threshold), df))
-        args_list.append((get_rf_perf_evidently_exp(suffix=suffix, window_size=window_size, n_ref=n_ref, n_first_fit=n_first_fit), df))
+        # args_list.append((get_rf_target_evidently_exp(suffix=suffix, window_size=window_size, n_ref=n_ref, n_first_fit=n_first_fit,
+        #                                             stattest_threshold=stattest_threshold), df))
+        # args_list.append((get_rf_data_evidently_exp(suffix=suffix, window_size=window_size, n_ref=n_ref, n_first_fit=n_first_fit, 
+        #                                             stattest_threshold=stattest_threshold), df))
+        # args_list.append((get_rf_perf_evidently_exp(suffix=suffix, window_size=window_size, n_ref=n_ref, n_first_fit=n_first_fit), df))
         args_list.append((get_rf_all_evidently_exp(suffix=suffix, window_size=window_size, n_ref=n_ref, n_first_fit=n_first_fit, 
                                                    data_stattest_threshold=stattest_threshold, target_stattest_threshold=stattest_threshold)))
     return args_list
@@ -58,7 +58,7 @@ def compose_adwin_experiments(dataset_name):
         'delta': [0.02, 0.01, 0.2],
         'min_window_length': [50]
     }
-    samples = list(ParameterSampler(param_grid, n_iter=10, random_state=42))
+    samples = list(ParameterSampler(param_grid, n_iter=12, random_state=42))
 
     for sample in samples:
         args_list.append((get_rf_adwin_target_exp(df, window_size=window_size, suffix=suffix, grace_period=grace_period, n_first_fit=n_first_fit, **sample), df)) # rf + adwin (target)
