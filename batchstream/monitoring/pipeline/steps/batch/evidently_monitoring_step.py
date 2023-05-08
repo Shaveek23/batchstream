@@ -67,8 +67,19 @@ class EvidentlyMonitoringStep(MonitoringStep):
             'detect_condition': self.detect_condition,
             'name': self._name
         }
-        suite_tests = []
-        suite_tests.extend([{t.name: t.__dict__ } for t in self.detector._inner_suite.context.tests])
-        params.update({'evidently_test_suite__tests': suite_tests})
+        params.update({'evidently_test_suite__tests': self._get_test_suite_params(self.detector)})
         return params
+    
+    def _get_test_suite_params(self, test_suite: TestSuite) -> dict:
+        tests_metadata = []
+        for test in test_suite._inner_suite.context.tests:
+            test_metadata = test.metric.__dict__
+            test_metadata.update({'test_name': test.get_id()})
+            test_metadata.pop('context')
+            tests_metadata.append(test_metadata)  
+        for preset in test_suite._test_presets:
+            preset_metadata = preset.__dict__
+            preset_metadata.update({'preset_name': str(preset.__class__).split('.')[-1]})
+            tests_metadata.append(preset_metadata) 
+        return tests_metadata
     

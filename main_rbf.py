@@ -11,7 +11,7 @@ from sklearn.model_selection import ParameterSampler
 
 
 
-NUM_WORKERS = 16
+NUM_WORKERS = 32
 
 def compose_evidently_experiments(dataset_name):
     suffix = f"{str(uuid.uuid4())[:4]}_{dataset_name}"
