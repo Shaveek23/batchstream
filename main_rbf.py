@@ -33,12 +33,12 @@ def compose_evidently_experiments(dataset_name):
         n_ref = n_curr
         stattest_threshold = samples['stattest_threshold']
         args_list.append((get_rf_target_evidently_exp(suffix=suffix, window_size=window_size, n_ref=n_ref, n_first_fit=n_first_fit,
-                                                    stattest_threshold=stattest_threshold), df))
+                                                    stattest_threshold=stattest_threshold), df.copy(deep=True)))
         args_list.append((get_rf_data_evidently_exp(suffix=suffix, window_size=window_size, n_ref=n_ref, n_first_fit=n_first_fit, 
-                                                    stattest_threshold=stattest_threshold), df))
-        args_list.append((get_rf_perf_evidently_exp(suffix=suffix, window_size=window_size, n_ref=n_ref, n_first_fit=n_first_fit), df))
+                                                    stattest_threshold=stattest_threshold), df.copy(deep=True)))
+        args_list.append((get_rf_perf_evidently_exp(suffix=suffix, window_size=window_size, n_ref=n_ref, n_first_fit=n_first_fit), df.copy(deep=True)))
         args_list.append((get_rf_all_evidently_exp(suffix=suffix, window_size=window_size, n_ref=n_ref, n_first_fit=n_first_fit, 
-                                                   data_stattest_threshold=stattest_threshold, target_stattest_threshold=stattest_threshold), df))
+                                                   data_stattest_threshold=stattest_threshold, target_stattest_threshold=stattest_threshold), df.copy(deep=True)))
     return args_list
 
 def compose_adwin_experiments(dataset_name):
@@ -61,8 +61,8 @@ def compose_adwin_experiments(dataset_name):
     samples = list(ParameterSampler(param_grid, n_iter=12, random_state=42))
 
     for sample in samples:
-        args_list.append((get_rf_adwin_target_exp(df, window_size=window_size, suffix=suffix, grace_period=grace_period, n_first_fit=n_first_fit, **sample), df)) # rf + adwin (target)
-        args_list.append((get_rf_adwin_only_exp(df, window_size=window_size, suffix=suffix, grace_period=grace_period, n_first_fit=n_first_fit, **sample), df)) # rf + adwin (data)
+        args_list.append((get_rf_adwin_target_exp(df, window_size=window_size, suffix=suffix, grace_period=grace_period, n_first_fit=n_first_fit, **sample), df.copy(deep=True))) # rf + adwin (target)
+        args_list.append((get_rf_adwin_only_exp(df, window_size=window_size, suffix=suffix, grace_period=grace_period, n_first_fit=n_first_fit, **sample), df.copy(deep=True))) # rf + adwin (data)
     return args_list
 
 def main():
