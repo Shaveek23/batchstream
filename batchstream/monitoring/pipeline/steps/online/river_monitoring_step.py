@@ -58,10 +58,13 @@ class RiverMonitoringStep(MonitoringStep):
 
     def get_params(self) -> dict:
         d = self.detector._get_params()
-        return {
+        params = {
             'type': self.__class__.__name__,
             'step_name': self._name,
             'river_detector': {
                 'type': self.detector.__class__.__name__
-            }.update(d)
+            }
         }
+        params['river_detector'].update(d)
+        return params
+        
