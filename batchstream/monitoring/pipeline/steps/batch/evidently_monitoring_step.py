@@ -65,7 +65,8 @@ class EvidentlyMonitoringStep(MonitoringStep):
             'min_instances': self.min_instances,
             'clock': self.clock,
             'detect_condition': self.detect_condition,
-            'name': self._name
+            'name': self._name,
+            'monitoring_strategy': self.monitoring_strategy.get_params()
         }
         params.update({'evidently_test_suite__tests': self._get_test_suite_params(self.detector)})
         return params
