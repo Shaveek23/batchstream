@@ -3,6 +3,7 @@ import numpy as np
 import plotly.express as px
 from plotly.subplots import make_subplots
 import math
+from os import path
 
 
 
@@ -10,7 +11,7 @@ def format_int_K(n: int):
     return str(n)[::-1].replace("000", "K")[::-1]
 
 
-def visualize_results(res, drift_hist, dataset_name, metrics=None):
+def visualize_results(res, drift_hist, dataset_name, metrics=None, out_dir=None):
     x = np.array(res.index)
     if metrics == None:
         metrics = res.columns
@@ -28,13 +29,6 @@ def visualize_results(res, drift_hist, dataset_name, metrics=None):
     stream_len = len(x)
     x = x[0::10]
     res = res[0::10]
-
-    dmax = res.values.max() 
-    dmin = res.values.min()
-
-    dmax = dmax + 0.1 * dmax
-    dmin = dmin - 0.1 * dmin
-
     num_parts = get_num_parts(stream_len)
 
     # Create traces
@@ -50,6 +44,11 @@ def visualize_results(res, drift_hist, dataset_name, metrics=None):
     for p in range(num_parts):
         x_part = x_parts[p]
         res_part = res_parts[p]
+        dmax = res_part.values.max() 
+        dmin = res_part.values.min()
+
+        dmax = dmax + 0.1 * dmax
+        dmin = dmin - 0.1 * dmin
 
         for m in res.columns:
             l = 0
@@ -119,9 +118,11 @@ def visualize_results(res, drift_hist, dataset_name, metrics=None):
         width=800,
         height=800,
     )
-    #fig.write_image(file='fig3.jpg', format='jpg')
+    if out_dir is not None:
+        fig.write_image(file=path.join(out_dir, 'fig.pdf'), format='pdf')
 
     fig.show()
+    return fig
 
 
 
