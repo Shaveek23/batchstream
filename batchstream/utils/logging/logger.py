@@ -1,6 +1,7 @@
 import logging
 from os import path
 import os
+from typing import List
 import json
 from .base.logger_base import ILogger
 
@@ -54,3 +55,8 @@ class Logger(ILogger):
         with open(file_path, 'a') as f:
             default = lambda o: f"<<non-serializable: {type(o).__qualname__}>>"
             f.write(json.dumps(d, default=default))
+
+    def log_model_replacement_history(self, replacement_idx: int):
+        file_path = path.join(self._output_dir, f'model_replacement_history.csv')
+        with open(file_path, mode="a+") as f:        
+            f.write(f'{replacement_idx}\n')

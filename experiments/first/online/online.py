@@ -29,7 +29,7 @@ def get_arf_exp(seed=42, window_size=1000, suffix=''):
         ('kappa', CohenKappa())
     ])
 
-    arf_model = ARFClassifier(seed=seed, leaf_prediction="mc")
+    arf_model = ARFClassifier(seed=seed, leaf_prediction="mc", drift_detector=A)
     arf_pipe = RiverPipeline(arf_model)
     arf_experiment = StreamExperiment(arf_pipe, eval_pipe, logger_factory)
     return arf_experiment

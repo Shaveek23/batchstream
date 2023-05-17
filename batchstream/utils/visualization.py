@@ -11,7 +11,7 @@ def format_int_K(n: int):
     return str(n)[::-1].replace("000", "K")[::-1]
 
 
-def visualize_results(res, drift_hist, dataset_name, metrics=None, out_dir=None):
+def visualize_results(res, drift_hist, dataset_name, replacement_hist, metrics=None, out_dir=None):
     x = np.array(res.index)
     if metrics == None:
         metrics = res.columns
@@ -59,7 +59,7 @@ def visualize_results(res, drift_hist, dataset_name, metrics=None, out_dir=None)
             fig.add_trace(go.Scatter(x=x_part, y=res_part[m], showlegend=showlegend,
                                 legendgroup="group",
                                 legendgrouptitle_text="Metrics",
-                                line=dict(color=c, width=2), name=m), row=p+1, col=1)
+                                line=dict(color=c, width=2), name=get_metric_name(m)), row=p+1, col=1)
         if p == 0:
             fig.update_layout(
                 xaxis = dict(
@@ -102,6 +102,26 @@ def visualize_results(res, drift_hist, dataset_name, metrics=None, out_dir=None)
                                 ), row=p+1, col=1
                             )
         showlegend = False
+
+        indices = [int(d) for d in replacement_hist if int(d) >= x_part[0] and int(d) < x_part[-1]]
+        for idx in indices:
+            fig.add_trace(go.Scatter(x=[idx, idx], 
+                            y=[dmin, dmax - (dmax - dmin)*0.15], 
+                            mode='lines+text', 
+                            line=dict(color="red", width=0, dash='dot'),
+                            showlegend=False, 
+                            legendgroup="group2",
+                            legendgrouptitle_text="Drift type",
+                            text=["", "R"],
+                            textposition=["bottom center", "top center"],
+                            textfont={
+                                        "color": "red",
+                                        "size": 14
+                            },
+                            hoverinfo=None,
+                            hovertext=f"Replacement index: {idx}"
+                            ), row=p+1, col=1
+                        )
         
     fig.update_layout(legend=dict(
         orientation="h",
@@ -111,7 +131,7 @@ def visualize_results(res, drift_hist, dataset_name, metrics=None, out_dir=None)
         x=1
     ))
 
-    fig.update_layout({"title": f"Results for {dataset_name} dataset"})
+    #fig.update_layout({"title": f"Results for {dataset_name} dataset"})
     
     fig.update_layout(
         autosize=False,
@@ -140,3 +160,18 @@ def get_num_parts(n: int):
 
 def get_interval_length():
     return 100_000
+
+
+def get_metric_name(metric_name: str):
+    dt = metric_name.lower()
+    name = ""
+    if "f1" in dt and "macro" in dt:
+        name = "F1 macro"
+    if "acc" in dt:
+        name = "Accuracy"
+    if "kappa" in dt:
+        name = "Cohen-Kappa"
+    if "preq" in dt:
+        window_size = dt.split("preq_")[-1]
+        name += f" (preq. {window_size})"
+    return name
