@@ -9,18 +9,18 @@ class SimpleMonitoringStrategy(BatchMonitoringStrategy):
     def __init__(self, n_curr: int=400, n_ref=400, type='data'):
         self.n_curr = n_curr
         self.n_ref = n_ref
-        self.type = type
+        self._type = type
 
     def get_ref_curr(self, history: HistoryManager):
-        if self.type == 'data':
+        if self._type == 'data':
             df = history.get_x_history_as_pd()
             return df.iloc[-(self.n_curr + self.n_ref):-self.n_curr, :], df.iloc[-self.n_curr:, :]
-        elif self.type == 'target':
+        elif self._type == 'target':
             target = history.get_y_history_as_pd()
             ref = target.iloc[-(self.n_curr + self.n_ref):-self.n_curr]
             curr = target.iloc[-self.n_curr:] 
             return pd.DataFrame(ref, columns=['target']), pd.DataFrame(curr, columns=['target'])
-        elif self.type == 'prediction':
+        elif self._type == 'prediction':
             target = history.get_y_history_as_pd().reset_index(drop=True)
             prediction = history.get_prediction_history_as_pd().reset_index(drop=True)
             ref_pred = prediction.iloc[-(self.n_curr + self.n_ref):-self.n_curr]
