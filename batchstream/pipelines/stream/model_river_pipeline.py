@@ -16,7 +16,7 @@ class RiverPipeline(StreamPipeline):
         return prediction, probabilities
 
     def get_name(self):
-        return super().get_name() # TO DO
+        return "RiverPipeline"
     
     def get_params(self) -> dict:
         return {

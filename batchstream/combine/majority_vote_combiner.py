@@ -14,5 +14,9 @@ class MajorityVoteCombiner(PipelineCombiner):
                 predictions.append(y_p)
         class_counts = Counter(predictions)
         majority_class = class_counts.most_common(1)[0][0]
-        return majority_class
+        return majority_class, []
+    
+    def get_params(self):
+        params = {'type': self.__class__.__name__}
+        return params
         

@@ -26,3 +26,4 @@ class MonitoringLogger(Logger):
         suite.save_json(f'{file_path}.json')
         if self._as_html:
             suite.save_html(f'{file_path}.html')
+

@@ -24,7 +24,7 @@ class RiverEvaluationPipeline(ModelEvaluation):
     def get_params(self) -> dict:
         step_params = []
         for metric_name, metric in self.metric_steps:
-            step_params.append({metric_name: metric._get_params()})
+            step_params.append({metric_name: metric.__dict__})
         return {
             'type': self.__class__.__name__,
             'metric_steps': step_params
