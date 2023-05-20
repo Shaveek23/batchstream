@@ -56,7 +56,7 @@ class Logger(ILogger):
             default = lambda o: f"<<non-serializable: {type(o).__qualname__}>>"
             f.write(json.dumps(d, default=default))
 
-    def log_model_replacement_history(self, replacement_idx: int):
-        file_path = path.join(self._output_dir, f'model_replacement_history.csv')
+    def log_model_history(self, i: int, type: str="replacement"):
+        file_path = path.join(self._output_dir, f'model_{type}_history.csv')
         with open(file_path, mode="a+") as f:        
-            f.write(f'{replacement_idx}\n')
+            f.write(f'{i}\n')

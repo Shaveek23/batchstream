@@ -1,4 +1,5 @@
 from typing import List, Tuple
+import uuid
 from river.utils import dict2numpy
 from collections import Counter
 from ..base.stream_pipeline import StreamPipeline
@@ -31,7 +32,8 @@ class BatchPipeline(StreamPipeline):
         self._output_drift_handlers: List[DriftHandler] = output_drift_handlers if isinstance(input_drift_handlers, list) else [output_drift_handlers]
         self._min_samples_retrain = min_samples_retrain
         self._min_samples_first_fit = min_samples_first_fit
-        self._logger = logger_factory.get_logger('BatchPipeline')
+        self.name = f"BatchPipeline_{str(uuid.uuid4())[:4]}"
+        self._logger = logger_factory.get_logger(self.name)
         self._initial_return = initial_return
 
     def handle(self, x, y: int) -> Tuple[int, List[float]]:
@@ -123,7 +125,8 @@ class BatchPipeline(StreamPipeline):
             'type': self.__class__.__name__,
             'min_samples_retrain': self._min_samples_retrain,
             'min_samples_first_fit': self._min_samples_first_fit,
-            'initial_return': self._initial_return
+            'initial_return': self._initial_return,
+            'name': self.name
         }
         params.update({'history': self._history.get_params()})
         params.update({'batch_model': self._estimator.get_params()})

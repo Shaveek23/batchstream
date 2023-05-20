@@ -3,6 +3,7 @@ from river.base import DriftDetector
 from batchstream.utils.logging.base.logger_factory import LoggerFactory
 from ..base.monitoring_step import MonitoringStep
 from batchstream.history.base.history_manager import HistoryManager
+import uuid
 
 
 
@@ -12,8 +13,8 @@ class RiverMonitoringStep(MonitoringStep):
         self.detector: DriftDetector = river_detector
         self._name_prefix = 'river-detector_ADWIN'
         self._col_idx = col_idx
-        self._name: str = f'{self._name_prefix}{col_idx}__{step_name}'
-        self._monitoring_logger = logger_factory.get_monitoring_logger(self._name, as_html=False)
+        self.name: str = f"{self._name_prefix}{col_idx}__{step_name}_{str(uuid.uuid4())[:4]}"
+        self._monitoring_logger = logger_factory.get_monitoring_logger(self.name, as_html=False)
 
     def monitor(self, history: HistoryManager) -> bool:  
         self._update_detector(history)
@@ -26,7 +27,7 @@ class RiverMonitoringStep(MonitoringStep):
 
     def _update_detector(self, history: HistoryManager):
         if len(history.x_history) < 1: return 
-        col_name = self._name.replace(self._name_prefix, "")
+        col_name = self.name.replace(self._name_prefix, "")
 
         if 'target' not in col_name:
             num = history.x_history[-1][self._col_idx]
@@ -39,7 +40,7 @@ class RiverMonitoringStep(MonitoringStep):
             return None
         return {
             'tests': [{
-                'name': self._name,
+                'name': self.name,
                 'description': f'Drift detected at idx.: {detection_idx}',
                 'status': 'FAIL',
                 'group': 'river-detector',
@@ -60,7 +61,7 @@ class RiverMonitoringStep(MonitoringStep):
         d = self.detector._get_params()
         params = {
             'type': self.__class__.__name__,
-            'step_name': self._name,
+            'name': self.name,
             'river_detector': {
                 'type': self.detector.__class__.__name__
             }

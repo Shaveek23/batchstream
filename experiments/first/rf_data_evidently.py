@@ -38,7 +38,7 @@ def get_rf_data_evidently_exp(suffix, n_curr=5000, n_ref=5000, n_online=100, win
     d1 = SimpleMonitoringStrategy(n_curr=n_curr, n_ref=n_ref)
     ev1 = EvidentlyMonitoringStep(data_drift_test_suite, d1, logger_factory, min_instances=2*n_curr, clock=n_curr, name='data_drift_eval')
 
-    input_monitoring = DriftMonitoringPipeline([(ev1._name, ev1)])
+    input_monitoring = DriftMonitoringPipeline([(ev1.name, ev1)])
     input_drift_retraining_strategy = SimpleRetrainingStrategy(n_last_retrain=n_curr, n_last_test=0)
     input_detector = DriftHandler(input_monitoring, input_drift_retraining_strategy)
     ###

@@ -51,6 +51,8 @@ def get_monitors_info_text(handlers, h_type):
 
 def print_info(out_dir):
     file_list = [f for f in out_dir.resolve().glob('*') if f.is_file() and 'metadata' in f.name]
+    if len(file_list) == 0:
+        return
     with open(file_list[0], 'r') as f:
         d = json.load(f)
     stream_pipeline = d['stream_pipeline']

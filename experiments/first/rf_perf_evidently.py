@@ -41,7 +41,7 @@ def get_rf_perf_evidently_exp(suffix, n_curr=5000, n_ref=5000, n_online=100, win
     d3 = SimpleMonitoringStrategy(n_curr=n_curr, n_ref=n_ref, type='prediction')
     ev3 = EvidentlyMonitoringStep(performance_drift, d3, logger_factory, min_instances=2*n_ref, clock=n_ref, name='performance_drift_eval')
 
-    output_monitoring = DriftMonitoringPipeline([(ev3._name, ev3)])
+    output_monitoring = DriftMonitoringPipeline([(ev3.name, ev3)])
     output_drift_retraining_strategy = SimpleRetrainingStrategy(n_last_retrain=n_ref, n_last_test=0)
     output_detector = DriftHandler(output_monitoring, output_drift_retraining_strategy)
     ###

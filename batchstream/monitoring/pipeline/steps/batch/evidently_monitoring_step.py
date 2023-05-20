@@ -4,7 +4,7 @@ from ..base.monitoring_step import MonitoringStep
 from .....history.base.history_manager import HistoryManager
 from .....batch_monitoring_strategy.base.batch_monitoring_strategy import BatchMonitoringStrategy
 from .....utils.logging.base.logger_factory import LoggerFactory
-
+import uuid
 
 
 class EvidentlyMonitoringStep(MonitoringStep):
@@ -25,9 +25,9 @@ class EvidentlyMonitoringStep(MonitoringStep):
         self.min_instances = min_instances
         self.clock = clock
         self.detect_condition = detect_condition
-        self._name = name
-        self._monitoring_logger = logger_factory.get_monitoring_logger(self._name, as_html=True)
-        self._monitoring_logger.log_info(f'EvidentlyMonitoringStep - name:{self._name} - START')
+        self.name = f"{name}_{str(uuid.uuid4())[:4]}"
+        self._monitoring_logger = logger_factory.get_monitoring_logger(self.name, as_html=True)
+        self._monitoring_logger.log_info(f'EvidentlyMonitoringStep - name:{self.name} - START')
        
     def monitor(self, history: HistoryManager) -> bool:
         report = None
@@ -65,7 +65,7 @@ class EvidentlyMonitoringStep(MonitoringStep):
             'min_instances': self.min_instances,
             'clock': self.clock,
             'detect_condition': self.detect_condition,
-            'name': self._name,
+            'name': self.name,
             'monitoring_strategy': self.monitoring_strategy.get_params()
         }
         params.update({'evidently_test_suite__tests': self._get_test_suite_params(self.detector)})

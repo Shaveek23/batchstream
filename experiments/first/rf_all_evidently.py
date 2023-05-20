@@ -46,7 +46,7 @@ def get_rf_all_evidently_exp(suffix, n_curr=5000, n_ref=5000, n_online=100, wind
     d2 = SimpleMonitoringStrategy(n_curr=n_curr, n_ref=n_ref, type='target')
     ev2 = EvidentlyMonitoringStep(target_drift, d2, logger_factory, min_instances=2*n_curr, clock=n_curr, name='target_drift_eval')
 
-    input_monitoring = DriftMonitoringPipeline([(ev1._name, ev1), (ev2._name, ev2)])
+    input_monitoring = DriftMonitoringPipeline([(ev1.name, ev1), (ev2.name, ev2)])
     input_drift_retraining_strategy = SimpleRetrainingStrategy(n_last_retrain=n_curr, n_last_test=0)
     input_detector = DriftHandler(input_monitoring, input_drift_retraining_strategy)
     ###
@@ -64,7 +64,7 @@ def get_rf_all_evidently_exp(suffix, n_curr=5000, n_ref=5000, n_online=100, wind
     d3 = SimpleMonitoringStrategy(n_curr=n_curr, n_ref=n_ref, type='prediction')
     ev3 = EvidentlyMonitoringStep(performance_drift, d3, logger_factory, min_instances=2*n_curr, clock=n_curr, name='performance_drift_eval')
 
-    output_monitoring = DriftMonitoringPipeline([(ev3._name, ev3)])
+    output_monitoring = DriftMonitoringPipeline([(ev3.name, ev3)])
     output_drift_retraining_strategy = SimpleRetrainingStrategy(n_last_retrain=n_curr, n_last_test=0)
     output_detector = DriftHandler(output_monitoring, output_drift_retraining_strategy)
     ###

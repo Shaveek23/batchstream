@@ -38,7 +38,7 @@ def get_rf_adwin_target_exp(df, suffix, clock=5000, grace_period=5000, min_windo
     # Detector 1.1 - ADWIN
     
     adwin = RiverMonitoringStep('target', -1, drift.ADWIN(clock=clock, grace_period=grace_period, min_window_length=min_window_length, delta=delta), logger_factory)
-    input_monitoring = DriftMonitoringPipeline([(adwin._name, adwin)])
+    input_monitoring = DriftMonitoringPipeline([(adwin.name, adwin)])
     input_drift_retraining_strategy = SimpleRetrainingStrategy(n_last_retrain=clock, n_last_test=0)
     input_detector = DriftHandler(input_monitoring, input_drift_retraining_strategy)
     ###

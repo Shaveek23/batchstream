@@ -74,6 +74,7 @@ class ShadowOnlineComparer(ModelOnlineComparer):
         return {
             'type': self.__class__.__name__,
             'n_online': self._n_online,
+            'is_hoeff_bound': self._is_hoeff_bound,
             'hoeffding_delta': self._hoeffding_delta,
             'metric': 'F1 macro score'
         }
