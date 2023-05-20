@@ -104,7 +104,7 @@ class BatchPipeline(StreamPipeline):
         is_replace, better_model = self._comparer.is_new_better_than_old_offline(retrained_model, self._estimator, X_retest, y_retest)
         if better_model != None and is_replace:
             self._logger.log_info(f'Iter={self._history.counter}: offline model selection: replacing model with the retrained one.')
-            self._logger.log_model_replacement_history(self._history.counter)
+            self._logger.log_model_history(self._history.counter)
             self._history.update_retraining_info(self._history.counter, detector_idx, detector_type)
             self._estimator.batch_model = retrained_model
 
@@ -113,7 +113,7 @@ class BatchPipeline(StreamPipeline):
         result, better_model, drift_iter, detector_idx, detector_type  = self._comparer.is_new_better_than_old_online(x, y, old_model_prediction)
         if result == True and better_model != None:
             self._logger.log_info(f'Iter={self._history.counter}: online model selection: replacing model with the retrained one.')
-            self._logger.log_model_replacement_history(self._history.counter)
+            self._logger.log_model_history(self._history.counter)
             self._history.update_retraining_info(drift_iter, detector_idx, detector_type)
             self._estimator.batch_model = better_model
    
