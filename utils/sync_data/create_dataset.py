@@ -33,3 +33,4 @@ def generate_RBFdrift(n_samples=500_000, n_classes=4, n_features=4, n_centroids=
     dataset_name = f'RBFDrift_{change_speed}_{n_features}_{n_classes}'
     save_dataset(dataset, dataset_name, n_samples, data_dir)
     
+def download_insects()
