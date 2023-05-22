@@ -31,8 +31,8 @@ class ShadowOnlineComparer(ModelOnlineComparer):
         self._predictions_old.append(old_model_prediction)
 
     def _make_decision(self):
-        f1_new = f1_score(self._y_true, self._predictions_new)
-        f1_old = f1_score( self._y_true, self._predictions_old)
+        f1_new = f1_score(self._y_true, self._predictions_new, average='macro')
+        f1_old = f1_score( self._y_true, self._predictions_old, average='macro')
         print(f"comparison: {f1_new - f1_old}")
         epsilon = 0.0
         if self._is_hoeff_bound:
