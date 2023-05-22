@@ -30,5 +30,19 @@ def get_dataset(dataset_name: str, data_path='./data'):
         df['dataset'] = 'RBFDrift_0.66'
         return df
     
+    if 'stagger' in dataset_name.lower() and '1k' in dataset_name.lower():
+        df = pd.read_csv(path.join(data_path, 'STAGGER', 'stagger_1K.csv'))
+        df['dataset'] = 'stagger'
+        return df
     
+    if 'stagger' in dataset_name.lower():
+        df = pd.read_csv(path.join(data_path, 'STAGGER', 'stagger_25K.csv'))
+        df['dataset'] = 'stagger'
+        return df
+
+    if 'led' in dataset_name.lower():
+        df = pd.read_csv(path.join(data_path, 'LEDDrift_4_4', 'LEDDrift_4_4.csv'))
+        df['dataset'] = 'stagger'
+        return df
+
     raise ValueError("Dataset not found.")

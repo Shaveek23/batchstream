@@ -27,8 +27,8 @@ class SimpleMonitoringStrategy(BatchMonitoringStrategy):
             curr_pred = prediction.iloc[-self.n_curr:] 
             ref_target = target.iloc[-(self.n_curr + self.n_ref):-self.n_curr]
             curr_target = target.iloc[-self.n_curr:] 
-            ref = pd.DataFrame({'prediction': ref_pred, 'target': ref_target})
-            curr = pd.DataFrame({'prediction': curr_pred, 'target': curr_target})
+            ref = pd.DataFrame({'prediction': ref_pred, 'target': ref_target}).reset_index(drop=True)
+            curr = pd.DataFrame({'prediction': curr_pred, 'target': curr_target}).reset_index(drop=True)
             return ref, curr
         return None, None
 

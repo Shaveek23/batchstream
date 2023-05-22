@@ -1,13 +1,11 @@
 from batchstream.utils.concurrent import run_concurrent
-from experiments.first.rf_adwin_only import get_rf_adwin_only_exp
-from experiments.first.rf_adwin_target import get_rf_adwin_target_exp
-from experiments.first.rf_data_evidently import get_rf_data_evidently_exp
-from experiments.first.rf_target_evidently import get_rf_target_evidently_exp
-from experiments.first.rf_perf_evidently import get_rf_perf_evidently_exp
-from experiments.first.rf_all_evidently import get_rf_all_evidently_exp
+from experiments.second import get_adwin_experiment, get_evidently_experiment
 from utils.read_data.get_dataset import get_dataset
 import uuid
 from sklearn.model_selection import ParameterSampler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.pipeline import Pipeline
+
 
 
 
@@ -21,6 +19,7 @@ def compose_evidently_experiments(dataset_name):
     # COMMON HYPERPARAMETERS
     window_size = 1000
     n_first_fit = 500
+    rf = Pipeline([('rf', RandomForestClassifier(random_state=42))])
 
     param_grid = {
         'n_curr': [1000, 5000, 2500, 10_000],
@@ -32,13 +31,22 @@ def compose_evidently_experiments(dataset_name):
         n_curr = samples['n_curr']
         n_ref = n_curr
         stattest_threshold = samples['stattest_threshold']
-        args_list.append((get_rf_target_evidently_exp(suffix=suffix, window_size=window_size, n_ref=n_ref, n_first_fit=n_first_fit,
-                                                    stattest_threshold=stattest_threshold), df.copy(deep=True)))
-        args_list.append((get_rf_data_evidently_exp(suffix=suffix, window_size=window_size, n_ref=n_ref, n_first_fit=n_first_fit, 
-                                                    stattest_threshold=stattest_threshold), df.copy(deep=True)))
-        args_list.append((get_rf_perf_evidently_exp(suffix=suffix, window_size=window_size, n_ref=n_ref, n_first_fit=n_first_fit), df.copy(deep=True)))
-        args_list.append((get_rf_all_evidently_exp(suffix=suffix, window_size=window_size, n_ref=n_ref, n_first_fit=n_first_fit, 
-                                                   data_stattest_threshold=stattest_threshold, target_stattest_threshold=stattest_threshold), df.copy(deep=True)))
+        args_list.append((get_evidently_experiment(suffix, rf, n_online=500, n_first_fit=500, window_size=1000,
+        n_curr=n_curr, data_stattest_threshold=stattest_threshold, target_stattest_threshold=stattest_threshold,
+        data_drift=True, target_drift=True, is_performance=True), df.copy(deep=True)))
+        
+        args_list.append((get_evidently_experiment(suffix, rf, n_online=500, n_first_fit=500, window_size=1000,
+        n_curr=n_curr, data_stattest_threshold=stattest_threshold, target_stattest_threshold=stattest_threshold,
+        data_drift=True, target_drift=False, is_performance=False), df.copy(deep=True)))
+        
+        args_list.append((get_evidently_experiment(suffix, rf, n_online=500, n_first_fit=500, window_size=1000,
+        n_curr=n_curr, data_stattest_threshold=stattest_threshold, target_stattest_threshold=stattest_threshold,
+        data_drift=False, target_drift=True, is_performance=False), df.copy(deep=True)))
+
+        args_list.append((get_evidently_experiment(suffix, rf, n_online=500, n_first_fit=500, window_size=1000,
+        n_curr=n_curr, data_stattest_threshold=stattest_threshold, target_stattest_threshold=stattest_threshold,
+        data_drift=False, target_drift=False, is_performance=True), df.copy(deep=True)))
+        
     return args_list
 
 def compose_adwin_experiments(dataset_name):
@@ -51,24 +59,26 @@ def compose_adwin_experiments(dataset_name):
     window_size = 1000
     grace_period = 1000
     n_first_fit = 300
+    rf = Pipeline([('rf', RandomForestClassifier(random_state=42))])
 
 
     param_grid = {
         'clock': [100, 5000, 2500, 50],
         'delta': [0.02, 0.01, 0.2],
-        'min_window_length': [50]
+        'min_window_length': [50, 100, 10, 500]
     }
     samples = list(ParameterSampler(param_grid, n_iter=12, random_state=42))
 
     for sample in samples:
-        args_list.append((get_rf_adwin_target_exp(df, window_size=window_size, suffix=suffix, grace_period=grace_period, n_first_fit=n_first_fit, **sample), df.copy(deep=True))) # rf + adwin (target)
-        args_list.append((get_rf_adwin_only_exp(df, window_size=window_size, suffix=suffix, grace_period=grace_period, n_first_fit=n_first_fit, **sample), df.copy(deep=True))) # rf + adwin (data)
+        args_list.append((get_adwin_experiment(suffix, rf, window_size=window_size, df_columns=df.columns, grace_period=grace_period, n_first_fit=n_first_fit, **sample), df.copy(deep=True), df.copy(deep=True))) # rf + adwin (target)
+        args_list.append((get_adwin_experiment(suffix, df, window_size=window_size, adwin_detector_type='target_only', df_columns=df.columns, grace_period=grace_period, n_first_fit=n_first_fit, **sample), df.copy(deep=True), df.copy(deep=True))) # rf + adwin (data)
+        args_list.append((get_adwin_experiment(suffix, df, window_size=window_size, adwin_detector_type='data_only', df_columns=df.columns, grace_period=grace_period, n_first_fit=n_first_fit, **sample), df.copy(deep=True), df.copy(deep=True))) # rf + adwin (data)
     return args_list
 
 def main():
-    args_list = compose_evidently_experiments('elec')
-    args_list += compose_adwin_experiments('elec')
-    run_concurrent(args_list, NUM_WORKERS)
+    args_list = compose_evidently_experiments('led')
+    args_list += compose_adwin_experiments('led')
+    #run_concurrent(args_list, NUM_WORKERS)
     
 if __name__ == "__main__":
     main()
