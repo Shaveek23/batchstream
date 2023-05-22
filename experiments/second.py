@@ -163,7 +163,7 @@ def get_evidently_experiment(suffix, sklearn_pipeline, n_online=500, n_first_fit
     return experiment
 
 def get_adwin_experiment(suffix, sklearn_pipeline, n_online=500, n_first_fit=500, window_size=1000,
-    clock=5000, grace_period=5000, min_window_length=1000, delta=1e-5, adwin_detector_type='all', df_columns=None, logger_factory=None):
+    clock=5000, grace_period=5000, min_window_length=1000, delta=1e-5, adwin_detector_type='all', df_columns=None):
     prefix = str(uuid.uuid4())[:8]
     name = f'{prefix}_adwin_{adwin_detector_type}_{suffix}'
     exp_name = f'{name}_{datetime.today().strftime("%Y%m%d_%H%M%S")}'
