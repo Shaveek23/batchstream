@@ -78,7 +78,7 @@ def compose_adwin_experiments(dataset_name):
 def main():
     args_list = compose_evidently_experiments('led')
     args_list += compose_adwin_experiments('led')
-    #un_concurrent(args_list, NUM_WORKERS)
+    run_concurrent(args_list, NUM_WORKERS)
     
 if __name__ == "__main__":
     main()
