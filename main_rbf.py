@@ -9,7 +9,7 @@ from sklearn.pipeline import Pipeline
 
 
 
-NUM_WORKERS = 32
+NUM_WORKERS = 54
 
 def compose_evidently_experiments(dataset_name):
     suffix = f"{str(uuid.uuid4())[:4]}_{dataset_name}"
@@ -64,8 +64,8 @@ def compose_adwin_experiments(dataset_name):
 
     param_grid = {
         'clock': [100, 5000, 2500, 50],
-        'delta': [0.02, 0.01, 0.2],
-        'min_window_length': [50, 100, 10, 500]
+        'delta': [0.05, 0.1, 0.2, 0.5],
+        'min_window_length': [50, 10, 500]
     }
     samples = list(ParameterSampler(param_grid, n_iter=12, random_state=42))
 
@@ -85,8 +85,10 @@ def compose_adwin_experiments(dataset_name):
     return args_list
 
 def main():
-    #args_list = compose_evidently_experiments('led')
-    args_list = compose_adwin_experiments('led')
+    dataset_name = 'rbf66'
+    args_list = []
+    args_list += compose_evidently_experiments(dataset_name)
+    args_list += compose_adwin_experiments(dataset_name)
     run_concurrent(args_list, NUM_WORKERS)
     
 if __name__ == "__main__":
