@@ -70,14 +70,23 @@ def compose_adwin_experiments(dataset_name):
     samples = list(ParameterSampler(param_grid, n_iter=12, random_state=42))
 
     for sample in samples:
-        args_list.append((get_adwin_experiment(suffix, rf, window_size=window_size, df_columns=df.columns, grace_period=grace_period, n_first_fit=n_first_fit, **sample), df.copy(deep=True), df.copy(deep=True))) # rf + adwin (target)
-        args_list.append((get_adwin_experiment(suffix, df, window_size=window_size, adwin_detector_type='target_only', df_columns=df.columns, grace_period=grace_period, n_first_fit=n_first_fit, **sample), df.copy(deep=True), df.copy(deep=True))) # rf + adwin (data)
-        args_list.append((get_adwin_experiment(suffix, df, window_size=window_size, adwin_detector_type='data_only', df_columns=df.columns, grace_period=grace_period, n_first_fit=n_first_fit, **sample), df.copy(deep=True), df.copy(deep=True))) # rf + adwin (data)
+        args_list.append((
+                get_adwin_experiment(suffix, rf, window_size=window_size, df_columns=df.columns, grace_period=grace_period, n_first_fit=n_first_fit, **sample),
+                df.copy(deep=True)
+            )) 
+        args_list.append((
+            get_adwin_experiment(suffix, rf, window_size=window_size, adwin_detector_type='target_only', df_columns=df.columns, grace_period=grace_period, n_first_fit=n_first_fit, **sample),
+            df.copy(deep=True)
+        )) 
+        args_list.append((
+            get_adwin_experiment(suffix, rf, window_size=window_size, adwin_detector_type='data_only', df_columns=df.columns, grace_period=grace_period, n_first_fit=n_first_fit, **sample),
+            df.copy(deep=True)
+        )) 
     return args_list
 
 def main():
-    args_list = compose_evidently_experiments('led')
-    args_list += compose_adwin_experiments('led')
+    #args_list = compose_evidently_experiments('led')
+    args_list = compose_adwin_experiments('led')
     run_concurrent(args_list, NUM_WORKERS)
     
 if __name__ == "__main__":
