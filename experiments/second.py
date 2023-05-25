@@ -51,11 +51,11 @@ def get_evidently_input_handlers(n_curr, n_ref, data_stattest_threshold, target_
     ev1 = EvidentlyMonitoringStep(data_drift_test_suite, d1, logger_factory, min_instances=2*n_curr, clock=n_curr, name='data_drift_eval')
 
     # Detector 1.2 - Target Drift
-    target_drift = {'tests': [
+    target_drift_tests = {'tests': [
         TestColumnDrift(column_name='target', stattest_threshold=target_stattest_threshold),
     ]}
     d2 = SimpleMonitoringStrategy(n_curr=n_curr, n_ref=n_ref, type='target')
-    ev2 = EvidentlyMonitoringStep(target_drift, d2, logger_factory, min_instances=2*n_curr, clock=n_curr, name='target_drift_eval')
+    ev2 = EvidentlyMonitoringStep(target_drift_tests, d2, logger_factory, min_instances=2*n_curr, clock=n_curr, name='target_drift_eval')
 
     monitoring_steps = []
     if data_drift:
