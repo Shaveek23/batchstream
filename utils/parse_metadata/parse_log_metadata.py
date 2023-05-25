@@ -67,3 +67,4 @@ def print_info(out_dir):
     info += get_monitors_info_text(i_handlers, 'Input')
     info += get_monitors_info_text(o_handlers, 'Output')
     print(info)
+    return info
