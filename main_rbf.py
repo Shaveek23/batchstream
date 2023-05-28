@@ -5,6 +5,7 @@ import uuid
 from sklearn.model_selection import ParameterSampler
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.pipeline import Pipeline
+import xgboost as xgb
 
 
 
@@ -43,9 +44,9 @@ def compose_evidently_experiments(dataset_name):
         n_curr=n_curr, data_stattest_threshold=stattest_threshold, target_stattest_threshold=stattest_threshold,
         data_drift=False, target_drift=True, is_performance=False), df.copy(deep=True)))
 
-        args_list.append((get_evidently_experiment(suffix, rf, n_online=500, n_first_fit=n_first_fit, window_size=window_size,
-        n_curr=n_curr, data_stattest_threshold=stattest_threshold, target_stattest_threshold=stattest_threshold,
-        data_drift=False, target_drift=False, is_performance=True), df.copy(deep=True)))
+    args_list.append((get_evidently_experiment(suffix, rf, n_online=500, n_first_fit=n_first_fit, window_size=window_size,
+    n_curr=n_curr, data_stattest_threshold=stattest_threshold, target_stattest_threshold=stattest_threshold,
+    data_drift=False, target_drift=False, is_performance=True), df.copy(deep=True)))
         
     return args_list
 

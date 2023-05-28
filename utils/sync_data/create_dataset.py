@@ -35,8 +35,8 @@ def generate_RBFdrift(n_samples=500_000, n_classes=4, n_features=4, n_centroids=
     dataset_name = f'RBFDrift_{change_speed}_{n_features}_{n_classes}'
     save_dataset(dataset, dataset_name, n_samples, data_dir)
 
-def generate_LEDdrift(n_samples=200_000, seed=42, noise_percentage=0.20,
-        irrelevant_features=False, n_drift_features=4, data_dir='./data'):
+def generate_LEDdrift(n_samples=100_000, seed=42, noise_percentage=0.00,
+        irrelevant_features=True, n_drift_features=4, data_dir='./data'):
     dataset = synth.LEDDrift(seed, noise_percentage, irrelevant_features, n_drift_features)
     dataset_name = f'LEDDrift_{n_drift_features}_{n_drift_features}'
     save_dataset(dataset, dataset_name, n_samples, data_dir)

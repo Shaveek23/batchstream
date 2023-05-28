@@ -177,3 +177,14 @@ def get_adwin_experiment(suffix, sklearn_pipeline, n_online=500, n_first_fit=500
     eval_pipe = get_eval_pipeline(window_size)
     experiment = StreamExperiment(batch_pipeline, eval_pipe, logger_factory)
     return experiment
+
+def get_online_experiment(suffix, river_model, window_size=1000):
+    prefix = str(uuid.uuid4())[:8]
+    model_name = str(river_model.__class__).split('.')[-1].replace("'>", "")
+    name = f'{prefix}_{model_name}_{suffix}'
+    exp_name = f'{name}_{datetime.today().strftime("%Y%m%d_%H%M%S")}'
+    logger_factory = LoggerFactory(experiment_id=exp_name)
+    eval_pipe = get_eval_pipeline(window_size)
+    river_pipe = RiverPipeline(river_model)
+    experiment = StreamExperiment(river_pipe, eval_pipe, logger_factory)
+    return experiment
