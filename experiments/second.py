@@ -36,6 +36,8 @@ from batchstream.pipelines.stream.model_river_pipeline import RiverPipeline
 from batchstream.retraining_strategy.simple_retraining_strategy import \
     SimpleRetrainingStrategy
 from batchstream.utils.logging.base.logger_factory import LoggerFactory
+from batchstream.combine.majority_vote_combiner import MajorityVoteCombiner
+from batchstream.combine.dynamic_switch_combiner import DynamicSwitchCombiner
 
 
 
@@ -144,7 +146,7 @@ def get_batch_pipeline(n_curr, n_first_fit, sklearn_pipe, input_handlers, output
     )
     return batch_pipeline
 
-def get_evidently_experiment(suffix, sklearn_pipeline, n_online=500, n_first_fit=500, window_size=1000,  n_curr=5_000, data_stattest_threshold=0.05, target_stattest_threshold=0.05,
+def get_evidently_experiment(suffix, sklearn_pipeline, n_online=500, n_first_fit=500, window_size=1000, n_curr=5_000, data_stattest_threshold=0.05, target_stattest_threshold=0.05,
     data_drift=True, target_drift=True, is_performance=True):
     prefix = str(uuid.uuid4())[:8]
     name = f'{prefix}_evidently_d_{data_drift}_t_{target_drift}__{suffix}'
@@ -152,7 +154,7 @@ def get_evidently_experiment(suffix, sklearn_pipeline, n_online=500, n_first_fit
     
     logger_factory = LoggerFactory(exp_name)
     input_handlers = get_evidently_input_handlers(n_curr=n_curr, n_ref=n_curr,
-        data_stattest_threshold=data_stattest_threshold, target_stattest_threshold=data_stattest_threshold,
+        data_stattest_threshold=data_stattest_threshold, target_stattest_threshold=target_stattest_threshold,
         logger_factory=logger_factory, data_drift=data_drift, target_drift=target_drift)
     output_handlers = get_evidently_output_handlers(n_curr, n_ref=n_curr, logger_factory=logger_factory) if is_performance else None
     sklearn_pipeline = SklearnEstimator(sklearn_pipeline)
@@ -188,3 +190,36 @@ def get_online_experiment(suffix, river_model, window_size=1000):
     river_pipe = RiverPipeline(river_model)
     experiment = StreamExperiment(river_pipe, eval_pipe, logger_factory)
     return experiment
+
+def get_combining_experiment(suffix, sklearn_estimator, river_estimator, window_size, n_curr=5_000, data_stattest_threshold=0.05, target_stattest_threshold=0.05,
+    n_first_fit=5_000, n_online=500, is_data_drift=True, is_target_drift=True, is_performance=True, comb_type='mv'):
+    prefix = str(uuid.uuid4())[:8]
+    name = f'{prefix}_combine_{suffix}'
+    exp_name = f'{name}_{datetime.today().strftime("%Y%m%d_%H%M%S")}'
+    logger_factory = LoggerFactory(experiment_id=exp_name)
+    eval_pipe = get_eval_pipeline(window_size)
+    
+    members = []
+    members.append(_construct_batch_member(n_curr, n_first_fit, data_stattest_threshold, target_stattest_threshold, sklearn_estimator,
+        n_online, logger_factory, is_data_drift, is_target_drift, is_performance))
+    members.append(RiverPipeline(river_estimator))
+
+    if comb_type == 'mv': combiner = MajorityVoteCombiner()
+    elif comb_type == 'ds': combiner = DynamicSwitchCombiner(n_members=len(members), metric=Rolling(MacroF1(), window_size), logger_factory=logger_factory)
+    else: raise ValueError('comb_type not recognized')
+    comb_pipeline = CombinationPipeline(members=members, combiner=combiner)
+    
+    experiment = StreamExperiment(comb_pipeline, eval_pipe, logger_factory)
+    return experiment
+
+def _construct_batch_member(n_curr, n_first_fit, data_stattest_threshold, target_stattest_threshold, sklearn_estimator,
+        n_online, logger_factory, is_data_drift, is_target_drift, is_performance):
+    input_handlers = get_evidently_input_handlers(n_curr=n_curr, n_ref=n_curr,
+        data_stattest_threshold=data_stattest_threshold, target_stattest_threshold=target_stattest_threshold,
+        logger_factory=logger_factory, data_drift=is_data_drift, target_drift=is_target_drift)
+    output_handlers = get_evidently_output_handlers(n_curr, n_ref=n_curr, logger_factory=logger_factory) if is_performance else None
+    model_comparer = ShadowOnlineComparer(n_online=n_online)
+    sklearn_pipeline = SklearnEstimator(sklearn_estimator)
+    batch_pipeline = get_batch_pipeline(n_curr, n_first_fit, sklearn_pipeline, input_handlers, output_handlers, model_comparer, logger_factory)
+    return batch_pipeline
+    
