@@ -191,7 +191,7 @@ def get_online_experiment(suffix, river_model, window_size=1000):
     experiment = StreamExperiment(river_pipe, eval_pipe, logger_factory)
     return experiment
 
-def get_combining_experiment(suffix, sklearn_estimator, river_estimator, window_size, n_curr=5_000, data_stattest_threshold=0.05, target_stattest_threshold=0.05,
+def get_combining_experiment(suffix, sklearn_estimators, river_estimators, window_size, n_curr=5_000, data_stattest_threshold=0.05, target_stattest_threshold=0.05,
     n_first_fit=5_000, n_online=500, is_data_drift=True, is_target_drift=True, is_performance=True, comb_type='mv'):
     prefix = str(uuid.uuid4())[:8]
     name = f'{prefix}_combine_{suffix}'
@@ -200,9 +200,11 @@ def get_combining_experiment(suffix, sklearn_estimator, river_estimator, window_
     eval_pipe = get_eval_pipeline(window_size)
     
     members = []
-    members.append(_construct_batch_member(n_curr, n_first_fit, data_stattest_threshold, target_stattest_threshold, sklearn_estimator,
-        n_online, logger_factory, is_data_drift, is_target_drift, is_performance))
-    members.append(RiverPipeline(river_estimator))
+    for sklearn_estimator in sklearn_estimators:
+        members.append(_construct_batch_member(n_curr, n_first_fit, data_stattest_threshold, target_stattest_threshold, sklearn_estimator,
+            n_online, logger_factory, is_data_drift, is_target_drift, is_performance))
+    for river_estimator in river_estimators:
+        members.append(RiverPipeline(river_estimator))
 
     if comb_type == 'mv': combiner = MajorityVoteCombiner()
     elif comb_type == 'ds': combiner = DynamicSwitchCombiner(n_members=len(members), metric=Rolling(MacroF1(), window_size), logger_factory=logger_factory)
