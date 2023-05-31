@@ -61,10 +61,10 @@ def generate_stagger_dataset(seed=42, balance_classes=True, drift_step: int=25_0
 
     df = pd.DataFrame(X)
 
-    ohe = OneHotEncoder()
+    ohe = OneHotEncoder(drop='first')
 
     df = pd.DataFrame(ohe.fit_transform(df).toarray())
-    df.columns = ['size_0', 'size_1', 'size_2', 'color_0', 'color_1', 'color_2', 'shape_0', 'shape_1', 'shape_2']
+    df.columns = ['size_0', 'size_1', 'color_0', 'color_1', 'shape_0', 'shape_1']
 
     df['target'] = Y
     
