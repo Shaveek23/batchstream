@@ -35,7 +35,7 @@ def actual_X_y(XY, history: HistoryManager):
     X, Y = XY
     for x, y in iter_pandas(pd.DataFrame(X), pd.Series(Y)):
         history.update_history_x(x)
-        history.update_history_y(y)
+        history.update_history_y_and_pred(y)
     return history.x_history, history.y_history
 
 # assert

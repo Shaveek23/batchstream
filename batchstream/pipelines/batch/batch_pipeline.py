@@ -43,8 +43,7 @@ class BatchPipeline(StreamPipeline):
         self._handle_drift_detectors(detector_type='in')
         prediction = self._estimator.predict(dict2numpy(x).reshape(1, -1))[0] 
         probabilities = self._estimator.predict_proba(dict2numpy(x).reshape(1, -1))
-        self._history.update_history_y(y)
-        self._history.update_predictions(prediction)
+        self._history.update_history_y_and_pred(y, prediction)
         self._select_better_model_online(x, y, prediction)
         self._handle_drift_detectors(detector_type='out')
         return prediction, probabilities
@@ -66,8 +65,7 @@ class BatchPipeline(StreamPipeline):
         if self._initial_return == 'majority':
             pred = self._majority_classifier(y)
         self._history.update_history_x(x)
-        self._history.update_history_y(y)
-        self._history.update_predictions(pred)
+        self._history.update_history_y_and_pred(y, pred)
         return pred, None
     
     def _majority_classifier(self, y) -> int:

@@ -23,7 +23,8 @@ class HistoryManager:
     def update_history_x(self, x):
         self._x_history.append(x)
 
-    def update_history_y(self, y):
+    def update_history_y_and_pred(self, y, pred):
+        self._prediction_history.append(pred)
         self._y_history.append(y)
         self.increment_counter()
         self.flush()
@@ -37,9 +38,6 @@ class HistoryManager:
             d.update({detector_idx: []})
         d[detector_idx].append(drift_iter)
         self._last_retraining = drift_iter
-
-    def update_predictions(self, pred):
-        self._prediction_history.append(pred)
     
     def increment_counter(self, n: int=1):
         self._counter += n
