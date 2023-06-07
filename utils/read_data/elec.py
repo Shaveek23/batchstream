@@ -19,7 +19,7 @@ def get_elec_df(data_path='./data') -> Tuple[pd.DataFrame, pd.Series]:
         df[to_convert_col_names] = to_convert_df.stack().str.decode('utf-8').unstack()
         class_col = df.pop('class').replace(['UP', 'DOWN'], [0, 1])
         for col in ['day']:
-            enc = OneHotEncoder(handle_unknown='ignore', sparse_output=False)
+            enc = OneHotEncoder(handle_unknown='ignore', sparse_output=False, drop='first')
             transformed = enc.fit_transform(df[[col]])
             transformed_df = pd.DataFrame(
                 index=df.index,
