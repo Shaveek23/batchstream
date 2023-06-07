@@ -5,7 +5,7 @@ from ..pipelines.base.stream_pipeline import StreamPipeline
 from ..utils.logging.base.logger_factory import LoggerFactory
 from ..utils.logging.logger import Logger
 import uuid
-
+from copy import deepcopy
 
 
 class DynamicSwitchCombiner(PipelineCombiner):
@@ -15,8 +15,9 @@ class DynamicSwitchCombiner(PipelineCombiner):
         self._logger: Logger = logger_factory.get_logger(f'DynamicSwitchCombiner_{self.name}')
         self._metrics = []
         self._n_members = n_members
+        self.counter = 0
         for i in range(n_members):
-            self._metrics.append(metric.clone())
+            self._metrics.append(deepcopy(metric))
 
     def combine(self, x, y, members: List[StreamPipeline]) -> Tuple[int, List[float]]:
         predictions = []
@@ -26,9 +27,11 @@ class DynamicSwitchCombiner(PipelineCombiner):
             y_p, _ = member.handle(x, y)
             predictions.append(y_p)
             if y_p == -1 or y_p == None:
+                print("continue")
                 continue
             self._metrics[i].update(y, y_p)
         self._logger.log_model_history(best_model_idx, type="switch_history")
+        self.counter += 1
         return predictions[best_model_idx], []
 
     def _get_the_best_model_idx(self):

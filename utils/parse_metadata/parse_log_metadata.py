@@ -63,7 +63,7 @@ def print_info(out_dir):
         first_fit = stream_pipeline['min_samples_first_fit']
         n_retrain = stream_pipeline['min_samples_retrain']
         batch_model = stream_pipeline['batch_model']
-        batch_alg = get_batch_model_metadata(batch_model)
+        batch_alg = 'batch'#get_batch_model_metadata(batch_model)
         i_handlers = get_drift_detectors_metadata(stream_pipeline['input_drift_detector'])
         o_handlers = get_drift_detectors_metadata(stream_pipeline['output_drift_detector'])
     info = f'BatchPipeline ({batch_alg}) - n_min_retrain: {n_retrain}, n_first_fit: {first_fit}\n'
