@@ -10,7 +10,7 @@ import copy
 
 
 
-NUM_WORKERS = 6
+NUM_WORKERS = 1
 
 def compose_evidently_experiments(dataset_name):
     suffix = f"{str(uuid.uuid4())[:4]}_{dataset_name}"
@@ -21,10 +21,10 @@ def compose_evidently_experiments(dataset_name):
     window_size = 1000
     n_online = 500
     n_first_fit = 5000
-    xgb_batch = Pipeline([('xgb', xgb.XGBClassifier())])
+    rf = Pipeline([('rf', RandomForestClassifier())])
 
     param_grid = {
-        'n_curr': [500, 1000, 5000, 2500, 10_000, 15_000],
+        'n_curr': [5000], #[500, 1000, 5000, 2500, 10_000, 15_000],
         'stattest_threshold': [0.01, 0.02, 0.03]
     }
     samples = list(ParameterSampler(param_grid, n_iter=12, random_state=42))
@@ -47,7 +47,7 @@ def compose_evidently_experiments(dataset_name):
 
     
     for n_batch in param_grid['n_curr']:
-        args_list.append((get_evidently_experiment(f"{suffix}_xgb", copy.deepcopy(xgb_batch), n_online=n_online, n_first_fit=n_first_fit, window_size=window_size,
+        args_list.append((get_evidently_experiment(f"{suffix}_rf", copy.deepcopy(rf), n_online=n_online, n_first_fit=n_first_fit, window_size=window_size,
             n_curr=n_batch, data_stattest_threshold=None,
             data_drift=False, target_drift=False, is_performance=True), df.copy(deep=True)))
         
