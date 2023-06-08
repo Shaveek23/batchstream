@@ -18,6 +18,7 @@ def get_covtype_df(data_path='./data') -> Tuple[pd.DataFrame, pd.Series]:
         df[to_convert_col_names] = to_convert_df.stack().str.decode('utf-8').unstack()
         class_col = df.pop('class').replace(['noad', 'ad'], [0, 1])
         df['target'] = class_col.copy()
+        df['target'] = df['target'] - 1
         df.loc[:, "Wilderness_Area1":] = df.loc[:, "Wilderness_Area1":].astype(str).astype(int)
         df['dataset'] = 'covtypeNorm'
     return df

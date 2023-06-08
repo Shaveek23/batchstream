@@ -42,7 +42,7 @@ def get_dataset(dataset_name: str, data_path='./data'):
 
     if 'led' in dataset_name.lower():
         df = pd.read_csv(path.join(data_path, 'LEDDrift_4_4', 'LEDDrift_4_4.csv'))
-        df['dataset'] = 'stagger'
+        df['dataset'] = 'LEDDrift_4_4'
         return df
 
     raise ValueError("Dataset not found.")
