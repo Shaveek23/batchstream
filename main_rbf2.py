@@ -22,7 +22,7 @@ from experiments.second import get_combining_experiment
 import copy
 from river import dummy
 
-NUM_WORKERS = 12
+NUM_WORKERS = 4
 
 def compose_experiments(dataset_name):
     suffix_ = f"{str(uuid.uuid4())[:4]}_{dataset_name}"
@@ -47,33 +47,33 @@ def compose_experiments(dataset_name):
 
     # LOGISTIC REGRESSION
     lr = Pipeline([('sc', SC()), ('lr_batch', LogisticRegression())])
-    args_list.append((get_evidently_experiment(f"{suffix}_lr", lr, n_online=n_online, n_first_fit=n_first_fit, window_size=window_size,
-       n_curr=n_curr_ref_retrain, data_stattest_threshold=threshold,
-       data_drift=is_data_drift, target_drift=is_target_drift, is_performance=is_performance_drift), df.copy(deep=True)))
+    #args_list.append((get_evidently_experiment(f"{suffix}_lr", lr, n_online=n_online, n_first_fit=n_first_fit, window_size=window_size,
+    #   n_curr=n_curr_ref_retrain, data_stattest_threshold=threshold,
+    #   data_drift=is_data_drift, target_drift=is_target_drift, is_performance=is_performance_drift), df.copy(deep=True)))
     
     # DECISION TREE CLASSIFIER
     dt = Pipeline([('dt', DecisionTreeClassifier())])
-    args_list.append((get_evidently_experiment(f"{suffix}_dt", dt, n_online=n_online, n_first_fit=n_first_fit, window_size=window_size,
-        n_curr=n_curr_ref_retrain, data_stattest_threshold=threshold,
-        data_drift=is_data_drift, target_drift=is_target_drift, is_performance=is_performance_drift), df.copy(deep=True)))
+    #args_list.append((get_evidently_experiment(f"{suffix}_dt", dt, n_online=n_online, n_first_fit=n_first_fit, window_size=window_size,
+    #    n_curr=n_curr_ref_retrain, data_stattest_threshold=threshold,
+    #    data_drift=is_data_drift, target_drift=is_target_drift, is_performance=is_performance_drift), df.copy(deep=True)))
     
     # # NAIVE BAYES
     nb = Pipeline([('nb_batch', GaussianNB())])
-    args_list.append((get_evidently_experiment(f"{suffix}_nb", nb, n_online=n_online, n_first_fit=n_first_fit, window_size=window_size,
-        n_curr=n_curr_ref_retrain, data_stattest_threshold=threshold,
-        data_drift=is_data_drift, target_drift=is_target_drift, is_performance=is_performance_drift), df.copy(deep=True)))
+    #args_list.append((get_evidently_experiment(f"{suffix}_nb", nb, n_online=n_online, n_first_fit=n_first_fit, window_size=window_size,
+    #    n_curr=n_curr_ref_retrain, data_stattest_threshold=threshold,
+    #    data_drift=is_data_drift, target_drift=is_target_drift, is_performance=is_performance_drift), df.copy(deep=True)))
     
     # # XGBoost 
     xgb_batch = Pipeline([('xgb', xgb.XGBClassifier())])
-    args_list.append((get_evidently_experiment(f"{suffix}_xgb", xgb_batch, n_online=n_online, n_first_fit=n_first_fit, window_size=window_size,
-        n_curr=n_curr_ref_retrain, data_stattest_threshold=threshold,
-        data_drift=is_data_drift, target_drift=is_target_drift, is_performance=is_performance_drift), df.copy(deep=True)))
+    #args_list.append((get_evidently_experiment(f"{suffix}_xgb", xgb_batch, n_online=n_online, n_first_fit=n_first_fit, window_size=window_size,
+    #    n_curr=n_curr_ref_retrain, data_stattest_threshold=threshold,
+    #    data_drift=is_data_drift, target_drift=is_target_drift, is_performance=is_performance_drift), df.copy(deep=True)))
     
     ##
     rf = Pipeline([('rf', RandomForestClassifier(random_state=42))])
-    args_list.append((get_evidently_experiment(f"{suffix}_rf", rf, n_online=n_online, n_first_fit=n_first_fit, window_size=window_size,
-       n_curr=n_curr_ref_retrain, data_stattest_threshold=threshold,
-       data_drift=is_data_drift, target_drift=is_target_drift, is_performance=is_performance_drift), df.copy(deep=True)))
+    #args_list.append((get_evidently_experiment(f"{suffix}_rf", rf, n_online=n_online, n_first_fit=n_first_fit, window_size=window_size,
+    #   n_curr=n_curr_ref_retrain, data_stattest_threshold=threshold,
+    #   data_drift=is_data_drift, target_drift=is_target_drift, is_performance=is_performance_drift), df.copy(deep=True)))
     
     ###
     # # Online methods
@@ -81,7 +81,7 @@ def compose_experiments(dataset_name):
 
     # # ADAPTIVE RANDOM FOREST
     arf = forest.ARFClassifier(seed=seed, leaf_prediction="mc")
-    args_list.append((get_online_experiment(suffix, arf, window_size),  df.copy(deep=True)))
+    #args_list.append((get_online_experiment(suffix, arf, window_size),  df.copy(deep=True)))
 
     # LOGISTIC REGRESSION
     lr_online = compose.Pipeline(
@@ -104,7 +104,7 @@ def compose_experiments(dataset_name):
             initializer=optim.initializers.Zeros()
         )
     )
-    args_list.append((get_online_experiment(suffix, lr_online, window_size),  df.copy(deep=True)))
+    #args_list.append((get_online_experiment(suffix, lr_online, window_size),  df.copy(deep=True)))
 
     # # HOEFFDING TREE 
     hat = HoeffdingAdaptiveTreeClassifier(
@@ -114,11 +114,11 @@ def compose_experiments(dataset_name):
         nb_threshold=10,
         seed=seed
     )
-    args_list.append((get_online_experiment(suffix, hat.clone(), window_size),  df.copy(deep=True)))
+    #args_list.append((get_online_experiment(suffix, hat.clone(), window_size),  df.copy(deep=True)))
 
     # # NAIVE BAYES
     nb_online = GNBOnline()
-    args_list.append((get_online_experiment(suffix, nb_online, window_size),  df.copy(deep=True)))
+    #args_list.append((get_online_experiment(suffix, nb_online, window_size),  df.copy(deep=True)))
    
     # # SRP
     nominal_attributes = []
@@ -127,27 +127,28 @@ def compose_experiments(dataset_name):
 
     base_model = HoeffdingTreeClassifier(grace_period=100, delta=0.01, nominal_attributes=nominal_attributes)
     srp_model = ensemble.SRPClassifier(model=base_model, n_models=3, seed=seed)
-    args_list.append((get_online_experiment(suffix, srp_model, window_size),  df.copy(deep=True)))
+    #args_list.append((get_online_experiment(suffix, srp_model, window_size),  df.copy(deep=True)))
 
     # # No Change
-    nc_online = dummy.NoChangeClassifier()
-    args_list.append((get_online_experiment(suffix, nc_online, window_size),  df.copy(deep=True)))
+    #nc_online = dummy.NoChangeClassifier()
+    #args_list.append((get_online_experiment(suffix, nc_online, window_size),  df.copy(deep=True)))
 
     ## # COMBINING BATCH AND ONLINE
-    # suffix = f"combining_{suffix_}"
+    suffix = f"combining_{suffix_}"
 
-    # args_list.append((get_combining_experiment(suffix, [copy.deepcopy(dt), copy.deepcopy(lr), copy.deepcopy(nb), copy.deepcopy(xgb_batch), copy.deepcopy(dt)],
-    #                                            [copy.deepcopy(lr_online), copy.deepcopy(hat), copy.deepcopy(arf), copy.deepcopy(srp_model)], window_size, n_curr_ref_retrain, threshold,
-    #    threshold, n_first_fit, n_online, is_data_drift=True, is_target_drift=False, is_performance=False, comb_type='mv'), df.copy(deep=True)))
+    args_list.append((get_combining_experiment(suffix + "_MV4", [copy.deepcopy(rf), copy.deepcopy(lr), copy.deepcopy(nb)],
+                                                [copy.deepcopy(lr_online), copy.deepcopy(arf)], window_size, n_curr_ref_retrain, threshold,
+        threshold, n_first_fit, n_online, is_data_drift=is_data_drift, is_target_drift=is_target_drift, is_performance=is_performance_drift, comb_type='mv'), df.copy(deep=True)))
     
-    #args_list.append((get_combining_experiment(suffix, [copy.deepcopy(rf)], [hat.clone()], window_size, n_curr_ref_retrain, threshold,
-    #     threshold, n_first_fit, n_online, is_data_drift=True, is_target_drift=False, is_performance=False, comb_type='ds'), df.copy(deep=True)))
+    args_list.append((get_combining_experiment(suffix + "_DS4", [copy.deepcopy(rf), copy.deepcopy(lr), copy.deepcopy(nb)],
+                                                [copy.deepcopy(lr_online), copy.deepcopy(arf)], window_size, n_curr_ref_retrain, threshold,
+         threshold, n_first_fit, n_online, is_data_drift=is_data_drift, is_target_drift=is_target_drift, is_performance=is_performance_drift, comb_type='ds'), df.copy(deep=True)))
     
-    #args_list.append((get_combining_experiment(suffix, [copy.deepcopy(rf)], [arf.clone(), hat.clone()], window_size, n_curr_ref_retrain, threshold,
-    #    threshold, n_first_fit, n_online, is_data_drift=True, is_target_drift=False, is_performance=False, comb_type='mv'), df.copy(deep=True)))
+    args_list.append((get_combining_experiment(suffix + "_MV5", [copy.deepcopy(xgb_batch), copy.deep(dt)], [copy.deepcopy(srp_model), copy.deepcopy(hat)], window_size, n_curr_ref_retrain, threshold,
+        threshold, n_first_fit, n_online, is_data_drift=is_data_drift, is_target_drift=is_target_drift, is_performance=is_performance_drift, comb_type='mv'), df.copy(deep=True)))
     
-    #args_list.append((get_combining_experiment(suffix, [copy.deepcopy(lr)], [lr_online.clone()], window_size, n_curr_ref_retrain, threshold,
-         #threshold, n_first_fit, n_online, is_data_drift=True, is_target_drift=False, is_performance=False, comb_type='ds'), df.copy(deep=True)))
+    args_list.append((get_combining_experiment(suffix + "_DS5", [copy.deepcopy(xgb_batch), copy.deep(dt)], [copy.deepcopy(srp_model), copy.deepcopy(hat)], window_size, n_curr_ref_retrain, threshold,
+        threshold, n_first_fit, n_online, is_data_drift=is_data_drift, is_target_drift=is_target_drift, is_performance=is_performance_drift, comb_type='ds'), df.copy(deep=True)))
 
     return args_list
 
