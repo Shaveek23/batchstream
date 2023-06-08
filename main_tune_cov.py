@@ -10,7 +10,7 @@ import copy
 
 
 
-NUM_WORKERS = 1
+NUM_WORKERS = 6
 
 def compose_evidently_experiments(dataset_name):
     suffix = f"{str(uuid.uuid4())[:4]}_{dataset_name}"
@@ -24,10 +24,10 @@ def compose_evidently_experiments(dataset_name):
     rf = Pipeline([('rf', RandomForestClassifier())])
 
     param_grid = {
-        'n_curr': [5000], #[500, 1000, 5000, 2500, 10_000, 15_000],
+        'n_curr': [500, 1000, 5000, 2500, 10_000, 15_000],
         'stattest_threshold': [0.01, 0.02, 0.03]
     }
-    samples = list(ParameterSampler(param_grid, n_iter=12, random_state=42))
+    #samples = list(ParameterSampler(param_grid, n_iter=12, random_state=42))
 
     # for samples in samples:
     #     n_curr_ref_retrain = samples['n_curr']
