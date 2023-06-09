@@ -3,6 +3,7 @@ from .elec import get_elec_df
 from .internet_ads import get_internet_ads_df
 from .insects_abrupt import get_insects_abrupt_df
 from .covtype import get_covtype_df
+from .comobility import get_comobility_dataset
 import pandas as pd
 from os import path
 
@@ -44,5 +45,8 @@ def get_dataset(dataset_name: str, data_path='./data'):
         df = pd.read_csv(path.join(data_path, 'LEDDrift_4_4', 'LEDDrift_4_4.csv'))
         df['dataset'] = 'LEDDrift_4_4'
         return df
+    
+    if 'comobility' in dataset_name.lower():
+        return get_comobility_dataset()
 
     raise ValueError("Dataset not found.")
