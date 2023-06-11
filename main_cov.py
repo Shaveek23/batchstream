@@ -58,22 +58,22 @@ def compose_experiments(dataset_name):
       data_drift=is_data_drift, target_drift=is_target_drift, is_performance=is_performance_drift), df.copy(deep=True)))
     
     # # NAIVE BAYES
-    nb = Pipeline([('nb_batch', GaussianNB())])
-    args_list.append((get_evidently_experiment(f"{suffix}_nb", nb, n_online=n_online, n_first_fit=n_first_fit, window_size=window_size,
-       n_curr=n_curr_ref_retrain, data_stattest_threshold=threshold,
-       data_drift=is_data_drift, target_drift=is_target_drift, is_performance=is_performance_drift), df.copy(deep=True)))
+    #nb = Pipeline([('nb_batch', GaussianNB())])
+   # args_list.append((get_evidently_experiment(f"{suffix}_nb", nb, n_online=n_online, n_first_fit=n_first_fit, window_size=window_size,
+    #   n_curr=n_curr_ref_retrain, data_stattest_threshold=threshold,
+     #  data_drift=is_data_drift, target_drift=is_target_drift, is_performance=is_performance_drift), df.copy(deep=True)))
     
     # # XGBoost 
-    xgb_batch = Pipeline([('xgb', xgb.XGBClassifier())])
-    args_list.append((get_evidently_experiment(f"{suffix}_xgb", xgb_batch, n_online=n_online, n_first_fit=n_first_fit, window_size=window_size,
-       n_curr=n_curr_ref_retrain, data_stattest_threshold=threshold,
-       data_drift=is_data_drift, target_drift=is_target_drift, is_performance=is_performance_drift), df.copy(deep=True)))
+   # xgb_batch = Pipeline([('xgb', xgb.XGBClassifier())])
+    #args_list.append((get_evidently_experiment(f"{suffix}_xgb", xgb_batch, n_online=n_online, n_first_fit=n_first_fit, window_size=window_size,
+    #   n_curr=n_curr_ref_retrain, data_stattest_threshold=threshold,
+    #   data_drift=is_data_drift, target_drift=is_target_drift, is_performance=is_performance_drift), df.copy(deep=True)))
     
     ##
-    rf = Pipeline([('rf', RandomForestClassifier(random_state=42))])
-    args_list.append((get_evidently_experiment(f"{suffix}_rf", rf, n_online=n_online, n_first_fit=n_first_fit, window_size=window_size,
-      n_curr=n_curr_ref_retrain, data_stattest_threshold=threshold,
-      data_drift=is_data_drift, target_drift=is_target_drift, is_performance=is_performance_drift), df.copy(deep=True)))
+    #rf = Pipeline([('rf', RandomForestClassifier(random_state=42))])
+    #args_list.append((get_evidently_experiment(f"{suffix}_rf", rf, n_online=n_online, n_first_fit=n_first_fit, window_size=window_size,
+    #  n_curr=n_curr_ref_retrain, data_stattest_threshold=threshold,
+    #  data_drift=is_data_drift, target_drift=is_target_drift, is_performance=is_performance_drift), df.copy(deep=True)))
     
     # ###
     # # # Online methods
