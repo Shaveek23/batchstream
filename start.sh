@@ -10,5 +10,5 @@
 
 source /home2/faculty/pgolik/.pyenv/versions/batchstream/bin/activate
 
-python /home2/faculty/pgolik/batchstream2/batchstream/main_elec.py
+python /home2/faculty/pgolik/batchstream2/batchstream/main_led.py
 

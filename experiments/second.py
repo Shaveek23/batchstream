@@ -263,4 +263,34 @@ def get_combining_exp_different_detectors(suffix, sklearn_estimators, river_esti
     
     experiment = StreamExperiment(comb_pipeline, eval_pipe, logger_factory)
     return experiment
+
+def get_combining_exp_different_s(suffix, sklearn_estimators, river_estimators, window_size, n_curr_s, n_first_fit, n_online,
+    data_stattest_threshold, target_stattest_threshold, is_performance, comb_type):
+    prefix = str(uuid.uuid4())[:8]
+    name = f'{prefix}_combine_{suffix}'
+    exp_name = f'{name}_{datetime.today().strftime("%Y%m%d_%H%M%S")}'
+    logger_factory = LoggerFactory(experiment_id=exp_name)
+    eval_pipe = get_eval_pipeline(window_size)
+
+    is_data_detection = data_stattest_threshold != None
+    is_target_detection = target_stattest_threshold != None
+    members = []
+    for sklearn_estimator in sklearn_estimators:
+        if n_curr_s != None:
+            if type(n_curr_s) is not list:
+                n_curr_s = [n_curr_s]
+            for n_c in n_curr_s:
+                members.append(_construct_batch_member(n_c, n_first_fit, data_stattest_threshold, target_stattest_threshold, sklearn_estimator,
+                    n_online, logger_factory, is_data_detection, is_target_detection, is_performance))
+                
+    for river_estimator in river_estimators:
+        members.append(RiverPipeline(river_estimator))
+
+    if comb_type == 'mv': combiner = MajorityVoteCombiner()
+    elif comb_type == 'ds': combiner = DynamicSwitchCombiner(n_members=len(members), metric=Rolling(MacroF1(), window_size), logger_factory=logger_factory)
+    else: raise ValueError('comb_type not recognized')
+    comb_pipeline = CombinationPipeline(members=members, combiner=combiner)
+    
+    experiment = StreamExperiment(comb_pipeline, eval_pipe, logger_factory)
+    return experiment
  
