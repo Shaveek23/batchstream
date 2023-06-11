@@ -2,7 +2,7 @@ from .base.model_comparer import ModelOnlineComparer
 from typing import Tuple
 import math
 from sklearn.metrics import f1_score
-from river.utils import dict2numpy
+import numpy as np
 
 
 
@@ -26,7 +26,7 @@ class ShadowOnlineComparer(ModelOnlineComparer):
 
     def _handle(self, x, y: int, old_model_prediction: int) -> int:
         self._y_true.append(y)
-        y_pred_new = self._new_model.predict(dict2numpy(x).reshape(1, -1))[0]
+        y_pred_new = self._new_model.predict(np.array(list(x.values())).reshape(1, -1))[0]
         self._predictions_new.append(y_pred_new)
         self._predictions_old.append(old_model_prediction)
 

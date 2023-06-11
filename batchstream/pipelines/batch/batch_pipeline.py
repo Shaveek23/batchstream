@@ -1,6 +1,6 @@
 from typing import List, Tuple
 import uuid
-from river.utils import dict2numpy
+import numpy as np
 from collections import Counter
 from ..base.stream_pipeline import StreamPipeline
 from ...drift_handlers.base.drift_handler import DriftHandler
@@ -41,8 +41,9 @@ class BatchPipeline(StreamPipeline):
         if is_not_ready: return self._make_result_when_not_fit(x, y)
         self._history.update_history_x(x)
         self._handle_drift_detectors(detector_type='in')
-        prediction = self._estimator.predict(dict2numpy(x).reshape(1, -1))[0] 
-        probabilities = self._estimator.predict_proba(dict2numpy(x).reshape(1, -1))
+        x_reshaped = np.array(list(x.values())).reshape(1, -1)
+        prediction = self._estimator.predict(x_reshaped)[0] 
+        probabilities = self._estimator.predict_proba(x_reshaped)
         self._history.update_history_y_and_pred(y, prediction)
         self._select_better_model_online(x, y, prediction)
         self._handle_drift_detectors(detector_type='out')

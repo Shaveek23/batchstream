@@ -4,6 +4,7 @@ from .internet_ads import get_internet_ads_df
 from .insects_abrupt import get_insects_abrupt_df
 from .covtype import get_covtype_df
 from .comobility import get_comobility_dataset
+from .leddrift_3 import get_leddrift4_df
 import pandas as pd
 from os import path
 
@@ -41,10 +42,13 @@ def get_dataset(dataset_name: str, data_path='./data'):
         df['dataset'] = 'stagger'
         return df
 
-    if 'led' in dataset_name.lower():
+    if 'led' in dataset_name.lower() and '4' in dataset_name.lower():
         df = pd.read_csv(path.join(data_path, 'LEDDrift_4_4', 'LEDDrift_4_4.csv'))
         df['dataset'] = 'LEDDrift_4_4'
         return df
+
+    if 'led' in dataset_name.lower() and '3' in dataset_name.lower():
+        return get_leddrift4_df()
     
     if 'comobility' in dataset_name.lower():
         return get_comobility_dataset()
