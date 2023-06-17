@@ -22,7 +22,7 @@ from experiments.second import get_combining_experiment, get_combining_exp_diffe
 import copy
 from river import dummy
 
-NUM_WORKERS = 5
+NUM_WORKERS = 2
 
 def compose_experiments(dataset_name):
     suffix_ = f"{str(uuid.uuid4())[:4]}_{dataset_name}"
@@ -144,17 +144,25 @@ def compose_experiments(dataset_name):
     # #                                             [copy.deepcopy(lr_online), copy.deepcopy(arf)], window_size, n_curr_ref_retrain, threshold,
     # #      threshold, n_first_fit, n_online, is_data_drift=is_data_drift, is_target_drift=is_target_drift, is_performance=is_performance_drift, comb_type='ds'), df.copy(deep=True)))
     
-    args_list.append((get_combining_exp_different_detectors(suffix + "_DS8", [copy.deepcopy(dt)], [copy.deepcopy(hat), copy.deepcopy(arf)], window_size, n_curr_ref_retrain,
-        n_first_fit, n_online, [0.01, 0.02], [0.01, 0.02], True, comb_type='ds'), df.copy(deep=True)))
+    # args_list.append((get_combining_exp_different_detectors(suffix + "_DS8", [copy.deepcopy(dt)], [copy.deepcopy(hat), copy.deepcopy(arf)], window_size, n_curr_ref_retrain,
+    #     n_first_fit, n_online, [0.01, 0.02], [0.01, 0.02], True, comb_type='ds'), df.copy(deep=True)))
     
-    args_list.append((get_combining_exp_different_detectors(suffix + "_MV8", [copy.deepcopy(dt)], [copy.deepcopy(hat), copy.deepcopy(arf)], window_size, n_curr_ref_retrain,
-        n_first_fit, n_online, [0.01, 0.02], [0.01, 0.02], True, comb_type='mv'), df.copy(deep=True)))
+    # args_list.append((get_combining_exp_different_detectors(suffix + "_MV8", [copy.deepcopy(dt)], [copy.deepcopy(hat), copy.deepcopy(arf)], window_size, n_curr_ref_retrain,
+    #     n_first_fit, n_online, [0.01, 0.02], [0.01, 0.02], True, comb_type='mv'), df.copy(deep=True)))
 
-    args_list.append((get_combining_experiment(suffix + "_MV9", [copy.deepcopy(rf)], [copy.deepcopy(srp_model), copy.deepcopy(hat)], window_size, n_curr_ref_retrain, threshold,
-        threshold, n_first_fit, n_online, is_data_drift=is_data_drift, is_target_drift=is_target_drift, is_performance=is_performance_drift, comb_type='mv'), df.copy(deep=True)))
+    # args_list.append((get_combining_experiment(suffix + "_MV9", [copy.deepcopy(rf)], [copy.deepcopy(srp_model), copy.deepcopy(hat)], window_size, n_curr_ref_retrain, threshold,
+    #     threshold, n_first_fit, n_online, is_data_drift=is_data_drift, is_target_drift=is_target_drift, is_performance=is_performance_drift, comb_type='mv'), df.copy(deep=True)))
     
-    args_list.append((get_combining_experiment(suffix + "_DS9", [copy.deepcopy(rf)], [copy.deepcopy(srp_model), copy.deepcopy(hat)], window_size, n_curr_ref_retrain, threshold,
-        threshold, n_first_fit, n_online, is_data_drift=is_data_drift, is_target_drift=is_target_drift, is_performance=is_performance_drift, comb_type='ds'), df.copy(deep=True)))
+    # args_list.append((get_combining_experiment(suffix + "_DS9", [copy.deepcopy(rf)], [copy.deepcopy(srp_model), copy.deepcopy(hat)], window_size, n_curr_ref_retrain, threshold,
+    #     threshold, n_first_fit, n_online, is_data_drift=is_data_drift, is_target_drift=is_target_drift, is_performance=is_performance_drift, comb_type='ds'), df.copy(deep=True)))
+
+    
+    args_list.append((get_combining_exp_different_detectors(suffix + "_WV8", [copy.deepcopy(dt)], [copy.deepcopy(hat), copy.deepcopy(arf)], window_size, n_curr_ref_retrain,
+        n_first_fit, n_online, [0.01, 0.02], [0.01, 0.02], True, comb_type='wv'), df.copy(deep=True)))
+
+    args_list.append((get_combining_experiment(suffix + "_WV9", [copy.deepcopy(rf)], [copy.deepcopy(srp_model), copy.deepcopy(hat)], window_size, n_curr_ref_retrain, threshold,
+        threshold, n_first_fit, n_online, is_data_drift=is_data_drift, is_target_drift=is_target_drift, is_performance=is_performance_drift, comb_type='wv'), df.copy(deep=True)))
+    
 
     return args_list
 

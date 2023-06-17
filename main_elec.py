@@ -22,7 +22,7 @@ from experiments.second import get_combining_experiment
 import copy
 from river import dummy
 
-NUM_WORKERS = 5
+NUM_WORKERS = 2
 
 def compose_experiments(dataset_name):
     suffix_ = f"{str(uuid.uuid4())[:4]}_{dataset_name}"
@@ -136,20 +136,26 @@ def compose_experiments(dataset_name):
     ## # COMBINING BATCH AND ONLINE
     #suffix = f"combining_{suffix_}"
 
-    args_list.append((get_combining_experiment(suffix + "_MV4", [copy.deepcopy(rf), copy.deepcopy(lr), copy.deepcopy(nb)],
-                                                [copy.deepcopy(lr_online), copy.deepcopy(arf)], window_size, n_curr_ref_retrain, threshold,
-        threshold, n_first_fit, n_online, is_data_drift=is_data_drift, is_target_drift=is_target_drift, is_performance=is_performance_drift, comb_type='mv'), df.copy(deep=True)))
+    # args_list.append((get_combining_experiment(suffix + "_MV4", [copy.deepcopy(rf), copy.deepcopy(lr), copy.deepcopy(nb)],
+    #                                             [copy.deepcopy(lr_online), copy.deepcopy(arf)], window_size, n_curr_ref_retrain, threshold,
+    #     threshold, n_first_fit, n_online, is_data_drift=is_data_drift, is_target_drift=is_target_drift, is_performance=is_performance_drift, comb_type='mv'), df.copy(deep=True)))
     
-    args_list.append((get_combining_experiment(suffix + "_DS4", [copy.deepcopy(rf), copy.deepcopy(lr), copy.deepcopy(nb)],
-                                                [copy.deepcopy(lr_online), copy.deepcopy(arf)], window_size, n_curr_ref_retrain, threshold,
-         threshold, n_first_fit, n_online, is_data_drift=is_data_drift, is_target_drift=is_target_drift, is_performance=is_performance_drift, comb_type='ds'), df.copy(deep=True)))
+    # args_list.append((get_combining_experiment(suffix + "_DS4", [copy.deepcopy(rf), copy.deepcopy(lr), copy.deepcopy(nb)],
+    #                                             [copy.deepcopy(lr_online), copy.deepcopy(arf)], window_size, n_curr_ref_retrain, threshold,
+    #      threshold, n_first_fit, n_online, is_data_drift=is_data_drift, is_target_drift=is_target_drift, is_performance=is_performance_drift, comb_type='ds'), df.copy(deep=True)))
     
-    args_list.append((get_combining_experiment(suffix + "_MV5", [copy.deepcopy(xgb_batch), copy.deepcopy(dt)], [copy.deepcopy(srp_model), copy.deepcopy(hat)], window_size, n_curr_ref_retrain, threshold,
-        threshold, n_first_fit, n_online, is_data_drift=is_data_drift, is_target_drift=is_target_drift, is_performance=is_performance_drift, comb_type='mv'), df.copy(deep=True)))
+    # args_list.append((get_combining_experiment(suffix + "_MV5", [copy.deepcopy(xgb_batch), copy.deepcopy(dt)], [copy.deepcopy(srp_model), copy.deepcopy(hat)], window_size, n_curr_ref_retrain, threshold,
+    #     threshold, n_first_fit, n_online, is_data_drift=is_data_drift, is_target_drift=is_target_drift, is_performance=is_performance_drift, comb_type='mv'), df.copy(deep=True)))
     
-    args_list.append((get_combining_experiment(suffix + "_DS5", [copy.deepcopy(xgb_batch), copy.deepcopy(dt)], [copy.deepcopy(srp_model), copy.deepcopy(hat)], window_size, n_curr_ref_retrain, threshold,
-        threshold, n_first_fit, n_online, is_data_drift=is_data_drift, is_target_drift=is_target_drift, is_performance=is_performance_drift, comb_type='ds'), df.copy(deep=True)))
+    # args_list.append((get_combining_experiment(suffix + "_DS5", [copy.deepcopy(xgb_batch), copy.deepcopy(dt)], [copy.deepcopy(srp_model), copy.deepcopy(hat)], window_size, n_curr_ref_retrain, threshold,
+    #     threshold, n_first_fit, n_online, is_data_drift=is_data_drift, is_target_drift=is_target_drift, is_performance=is_performance_drift, comb_type='ds'), df.copy(deep=True)))
 
+    args_list.append((get_combining_experiment(suffix + "_WV5", [copy.deepcopy(xgb_batch), copy.deepcopy(dt)], [copy.deepcopy(srp_model), copy.deepcopy(hat)], window_size, n_curr_ref_retrain, threshold,
+         threshold, n_first_fit, n_online, is_data_drift=is_data_drift, is_target_drift=is_target_drift, is_performance=is_performance_drift, comb_type='wv'), df.copy(deep=True)))
+
+    args_list.append((get_combining_experiment(suffix + "_WV4", [copy.deepcopy(rf), copy.deepcopy(lr), copy.deepcopy(nb)], [copy.deepcopy(lr_online), copy.deepcopy(arf)], window_size, n_curr_ref_retrain, threshold,
+         threshold, n_first_fit, n_online, is_data_drift=is_data_drift, is_target_drift=is_target_drift, is_performance=is_performance_drift, comb_type='wv'), df.copy(deep=True)))
+    
     return args_list
 
 def main():

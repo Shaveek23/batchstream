@@ -3,16 +3,17 @@ from typing import Tuple
 import math
 from sklearn.metrics import f1_score
 import numpy as np
-
+from functools import partial
 
 
 
 class ShadowOnlineComparer(ModelOnlineComparer):
 
-    def __init__(self, n_online: int=500, is_hoeffding_bound: bool=False, hoeffding_delta: float=1e-7):
+    def __init__(self, n_online: int=500, is_hoeffding_bound: bool=False, hoeffding_delta: float=1e-7, metric: any=None):
         super().__init__(n_online)
         self._hoeffding_delta = hoeffding_delta
         self._is_hoeff_bound = is_hoeffding_bound
+        self._metric = metric if metric != None else partial(f1_score, average='macro')
 
     def _is_new_better_than_old_online(self, x, y:int, old_model_prediction: int) -> Tuple[bool, object]:
         if self._new_model is None:
@@ -31,13 +32,12 @@ class ShadowOnlineComparer(ModelOnlineComparer):
         self._predictions_old.append(old_model_prediction)
 
     def _make_decision(self):
-        f1_new = f1_score(self._y_true, self._predictions_new, average='macro')
-        f1_old = f1_score( self._y_true, self._predictions_old, average='macro')
-        print(f"comparison: {f1_new - f1_old}")
+        score_new = self._metric(self._y_true, self._predictions_new)
+        score_old = self._metric(self._y_true, self._predictions_old)
         epsilon = 0.0
         if self._is_hoeff_bound:
             epsilon = self._hoeffding_bound(1, confidence=self._hoeffding_delta, n=len(self._predictions_new))
-        return (f1_new - f1_old) > epsilon
+        return (score_new - score_old) > epsilon
 
     @staticmethod
     def _hoeffding_bound(range_val, confidence, n):
