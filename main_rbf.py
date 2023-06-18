@@ -30,16 +30,16 @@ def compose_experiments(dataset_name):
     args_list = []
 
     # COMMON HYPERPARAMETERS
-    window_size = 500
-    n_first_fit = 1000
+    window_size = 1000
+    n_first_fit = 5000
     seed = 42
     
 
     ###
     # Batch methods:
     suffix = f"batch_{suffix_}"
-    n_curr_ref_retrain = 2_500
-    threshold = 0.02
+    n_curr_ref_retrain = 10_000
+    threshold = 0.03
     n_online = 500
     is_data_drift = True
     is_target_drift = False
