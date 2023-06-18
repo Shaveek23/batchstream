@@ -154,7 +154,7 @@ def compose_experiments(dataset_name):
                                                 [copy.deepcopy(lr_online), copy.deepcopy(arf)], window_size, n_curr_ref_retrain, threshold,
         threshold, n_first_fit, n_online, is_data_drift=is_data_drift, is_target_drift=is_target_drift, is_performance=is_performance_drift, comb_type='wv'), df.copy(deep=True)))
     
-    args_list.append((get_combining_experiment(suffix + "_WV2", [copy.deepcopy(xgb_batch), copy.deep(dt)], [copy.deepcopy(srp_model), copy.deepcopy(hat)], window_size, n_curr_ref_retrain, threshold,
+    args_list.append((get_combining_experiment(suffix + "_WV2", [copy.deepcopy(xgb_batch), copy.deepcopy(dt)], [copy.deepcopy(srp_model), copy.deepcopy(hat)], window_size, n_curr_ref_retrain, threshold,
         threshold, n_first_fit, n_online, is_data_drift=is_data_drift, is_target_drift=is_target_drift, is_performance=is_performance_drift, comb_type='wv'), df.copy(deep=True)))
     
     
