@@ -4,6 +4,7 @@ from .internet_ads import get_internet_ads_df
 from .insects_abrupt import get_insects_abrupt_df
 from .covtype import get_covtype_df
 from .comobility import get_comobility_dataset
+from .ohio import get_ohio_dataset
 from .leddrift_3 import get_leddrift4_df
 import pandas as pd
 from os import path
@@ -52,5 +53,8 @@ def get_dataset(dataset_name: str, data_path='./data'):
     
     if 'comobility' in dataset_name.lower():
         return get_comobility_dataset()
+    
+    if 'ohio' in dataset_name.lower():
+        return get_ohio_dataset()
 
     raise ValueError("Dataset not found.")
