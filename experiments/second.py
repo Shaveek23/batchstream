@@ -15,6 +15,7 @@ from sklearn.pipeline import Pipeline
 
 from batchstream.batch_monitoring_strategy.simple_monitoring_strategy import \
     SimpleMonitoringStrategy
+from batchstream.retraining_strategy.from_last_replacement_retraining_strategy import FromLastReplacementRetrainingStrategy
 from batchstream.combine.majority_vote_combiner import MajorityVoteCombiner
 from batchstream.drift_handlers.base.drift_handler import DriftHandler
 from batchstream.estimators.sklearn_estimator import SklearnEstimator
@@ -67,7 +68,7 @@ def get_evidently_input_handlers(n_curr, n_ref, data_stattest_threshold, target_
         monitoring_steps.append((ev2.name, ev2))
     input_monitoring = DriftMonitoringPipeline(monitoring_steps)
     
-    input_drift_retraining_strategy = SimpleRetrainingStrategy(n_last_retrain=n_curr, n_last_test=0)
+    input_drift_retraining_strategy = FromLastReplacementRetrainingStrategy()# SimpleRetrainingStrategy(n_last_retrain=n_curr, n_last_test=0)
     input_detector = DriftHandler(input_monitoring, input_drift_retraining_strategy)
 
     return input_detector
@@ -86,7 +87,7 @@ def get_evidently_output_handlers(n_curr, n_ref, logger_factory):
     ev3 = EvidentlyMonitoringStep(performance_drift, d3, logger_factory, min_instances=2*n_curr, clock=n_curr, name='performance_drift_eval')
 
     output_monitoring = DriftMonitoringPipeline([(ev3.name, ev3)])
-    output_drift_retraining_strategy = SimpleRetrainingStrategy(n_last_retrain=n_curr, n_last_test=0)
+    output_drift_retraining_strategy = FromLastReplacementRetrainingStrategy()#SimpleRetrainingStrategy(n_last_retrain=n_curr, n_last_test=0)
     output_detector = DriftHandler(output_monitoring, output_drift_retraining_strategy)
     
     return output_detector
@@ -164,6 +165,7 @@ def get_evidently_experiment(suffix, sklearn_pipeline, n_online=500, n_first_fit
     eval_pipe = get_eval_pipeline(window_size)
     experiment = StreamExperiment(batch_pipeline, eval_pipe, logger_factory)
     return experiment
+
 
 def get_adwin_experiment(suffix, sklearn_pipeline, n_online=500, n_first_fit=500, window_size=1000,
     clock=5000, grace_period=5000, min_window_length=1000, delta=1e-5, adwin_detector_type='all', df_columns=None):
