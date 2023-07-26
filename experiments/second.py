@@ -68,7 +68,7 @@ def get_evidently_input_handlers(n_curr, n_ref, data_stattest_threshold, target_
         monitoring_steps.append((ev2.name, ev2))
     input_monitoring = DriftMonitoringPipeline(monitoring_steps)
     
-    input_drift_retraining_strategy = FromLastReplacementRetrainingStrategy()# SimpleRetrainingStrategy(n_last_retrain=n_curr, n_last_test=0)
+    input_drift_retraining_strategy = SimpleRetrainingStrategy(n_last_retrain=n_curr, n_last_test=0)#FromLastReplacementRetrainingStrategy()
     input_detector = DriftHandler(input_monitoring, input_drift_retraining_strategy)
 
     return input_detector
@@ -87,7 +87,7 @@ def get_evidently_output_handlers(n_curr, n_ref, logger_factory):
     ev3 = EvidentlyMonitoringStep(performance_drift, d3, logger_factory, min_instances=2*n_curr, clock=n_curr, name='performance_drift_eval')
 
     output_monitoring = DriftMonitoringPipeline([(ev3.name, ev3)])
-    output_drift_retraining_strategy = FromLastReplacementRetrainingStrategy()#SimpleRetrainingStrategy(n_last_retrain=n_curr, n_last_test=0)
+    output_drift_retraining_strategy = SimpleRetrainingStrategy(n_last_retrain=n_curr, n_last_test=0)#FromLastReplacementRetrainingStrategy()
     output_detector = DriftHandler(output_monitoring, output_drift_retraining_strategy)
     
     return output_detector
