@@ -8,6 +8,7 @@ from .ohio import get_ohio_dataset
 from .leddrift_3 import get_leddrift4_df
 from .london import get_london_dataset
 from .optima import get_optima_dataset
+from .nts import get_nts_dataset
 import pandas as pd
 from os import path
 
@@ -64,5 +65,8 @@ def get_dataset(dataset_name: str, data_path='./data'):
     
     if 'optima' in dataset_name.lower():
         return get_optima_dataset()
+    
+    if 'nts' in dataset_name.lower():
+        return get_nts_dataset()
 
     raise ValueError("Dataset not found.")
