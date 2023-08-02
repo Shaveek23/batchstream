@@ -7,6 +7,7 @@ from .comobility import get_comobility_dataset
 from .ohio import get_ohio_dataset
 from .leddrift_3 import get_leddrift4_df
 from .london import get_london_dataset
+from .optima import get_optima_dataset
 import pandas as pd
 from os import path
 
@@ -60,5 +61,8 @@ def get_dataset(dataset_name: str, data_path='./data'):
     
     if 'london' in dataset_name.lower():
         return get_london_dataset()
+    
+    if 'optima' in dataset_name.lower():
+        return get_optima_dataset()
 
     raise ValueError("Dataset not found.")
