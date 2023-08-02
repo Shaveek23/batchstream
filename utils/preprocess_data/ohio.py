@@ -16,7 +16,7 @@ for dataset in dir_list:
     df = df.drop(variables_to_drop, axis=1)
     df_merged = pd.concat([df_merged, df])
 
-df_merged.sort_values(by=['assn', 'arr_hr', 'arr_min'])
+df_merged = df_merged.sort_values(by=['assn', 'arr_hr', 'arr_min'])
 df_merged = df_merged.drop(['assn'], axis=1)
 df_merged.reset_index(drop=True, inplace=True)
 
