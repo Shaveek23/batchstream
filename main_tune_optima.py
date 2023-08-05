@@ -19,13 +19,13 @@ def compose_evidently_experiments(dataset_name):
     args_list = []
 
     # COMMON HYPERPARAMETERS
-    window_size = 1000
-    n_online = 500
-    n_first_fit = 2500
+    window_size = 100
+    n_online = 50
+    n_first_fit = 150
     rf = Pipeline([('rf', RandomForestClassifier())])
 
     param_grid = {
-        'n_curr': [2500, 5000, 10_000, 20_000],
+        'n_curr': [50, 100, 250, 500],
         'stattest_threshold': [0.01, 0.02, 0.03]
     }
     samples = list(ParameterSampler(param_grid, n_iter=12, random_state=42))
@@ -49,7 +49,7 @@ def compose_evidently_experiments(dataset_name):
     return args_list
 
 def main():
-    dataset_name = 'ohio'
+    dataset_name = 'optima'
     args_list = []
     args_list += compose_evidently_experiments(dataset_name)
     run_concurrent(args_list, NUM_WORKERS)

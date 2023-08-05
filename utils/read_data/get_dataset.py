@@ -79,7 +79,7 @@ def get_dataset(dataset_name: str, data_path='./data'):
             return get_nhts_dataset('W')
         if '_mw' in dataset_name.lower():
             return get_nhts_dataset('MW')
-        if '_me' in dataset_name.lower():
-            return get_nhts_dataset('ME')
+        if '_ne' in dataset_name.lower():
+            return get_nhts_dataset('NE')
         
     raise ValueError("Dataset not found.")

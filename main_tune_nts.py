@@ -49,7 +49,7 @@ def compose_evidently_experiments(dataset_name):
     return args_list
 
 def main():
-    dataset_name = 'ohio'
+    dataset_name = 'nts'
     args_list = []
     args_list += compose_evidently_experiments(dataset_name)
     run_concurrent(args_list, NUM_WORKERS)
