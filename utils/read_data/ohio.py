@@ -5,7 +5,7 @@ from os import path
 
 
 def get_ohio_dataset(data_path='./data') -> Tuple[pd.DataFrame, pd.Series]:
-    data_path = path.join(data_path, r'OHIO/ohio_merged.csv' )
-    df = pd.read_csv(data_path, sep=';')
+    data_path = path.join(data_path, r'OHIO/ohio_merged.parquet.gzip' )
+    df = pd.read_parquet(data_path) 
     df['dataset'] = 'OHIO_merged'
     return df
