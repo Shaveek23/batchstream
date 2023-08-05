@@ -4,8 +4,8 @@ from os import path
 
 
 
-def get_nhts_dataset(data_path='./data') -> Tuple[pd.DataFrame, pd.Series]:
-    data_path = path.join(data_path, r'NHTS/NHTS_preprocessed.csv' )
-    df = pd.read_csv(data_path, sep=';')
-    df['dataset'] = 'NHTS'
+def get_nhts_dataset(state_group_type, data_path='./data'):
+    data_path = path.join(data_path, rf'NHTS/NHTS_{state_group_type}_merged.parquet.gzip')
+    df = pd.read_parquet(data_path) 
+    df['dataset'] = f'NHTS_{state_group_type}'
     return df
