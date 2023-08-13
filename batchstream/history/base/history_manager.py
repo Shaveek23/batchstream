@@ -6,7 +6,7 @@ import numpy as np
 
 class HistoryManager:
 
-    def __init__(self, n_flush_clock: int = 100_000, n_to_stay: int = 90_000, y_dtype=np.int8):
+    def __init__(self, n_flush_clock: int = 300_000, n_to_stay: int = 290_000, y_dtype=np.int8):
         self._counter: int = 0
         self._x_history: List = []
         self._y_history: List = []
