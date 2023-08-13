@@ -16,8 +16,9 @@ class FromLastReplacementRetrainingStrategy(RetrainingStrategy):
         else:
             x_history = history.x_history
        
-        X = x_history[history.get_last_replacement_idx():]
-        Y = history.y_history[history.get_last_replacement_idx():]
+        batch_size = (history.counter - history.get_last_replacement_idx())
+        X = x_history[(-batch_size):]
+        Y = history.y_history[(-batch_size):]
         return pd.DataFrame(X), pd.Series(Y), {}
 
     def get_retest_data(self, history: HistoryManager) -> Tuple[pd.DataFrame, pd.Series]:
