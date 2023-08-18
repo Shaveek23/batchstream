@@ -151,7 +151,7 @@ def get_batch_pipeline(n_curr, n_first_fit, sklearn_pipe, input_handlers, output
 def get_evidently_experiment(suffix, sklearn_pipeline, n_online=500, n_first_fit=500, window_size=1000, n_curr=5_000, data_stattest_threshold=0.05, target_stattest_threshold=0.05,
     data_drift=True, target_drift=True, is_performance=True):
     prefix = str(uuid.uuid4())[:8]
-    name = f'{prefix}_evidently_d_{data_drift}_t_{target_drift}__{suffix}'
+    name = f'{prefix}_evidently_d_{data_drift}_t_{target_drift}_p_{is_performance}__{suffix}'
     exp_name = f'{name}_{datetime.today().strftime("%Y%m%d_%H%M%S")}'
     
     logger_factory = LoggerFactory(exp_name)
