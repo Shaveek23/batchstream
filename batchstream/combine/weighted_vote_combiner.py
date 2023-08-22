@@ -39,14 +39,7 @@ class WeightedVoteCombiner(PipelineCombiner):
         return self._get_combined_pred(predictions, weights), []
 
     def _get_model_weights(self, model_scores):
-        max_value = max(model_scores)
-        min_value = min(model_scores)
-        diff = max_value - min_value 
-        if diff == 0: 
-            min_value = 0
-            diff = 1
-        member_vals_norm = [(m - min_value) / diff for m in model_scores]
-        return member_vals_norm
+        return model_scores / np.sum(model_scores)
     
     def _get_combined_pred(self, predictions, weights):
         weighted_pred = np.apply_along_axis(
