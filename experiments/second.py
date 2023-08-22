@@ -40,6 +40,8 @@ from batchstream.utils.logging.base.logger_factory import LoggerFactory
 from batchstream.combine.majority_vote_combiner import MajorityVoteCombiner
 from batchstream.combine.dynamic_switch_combiner import DynamicSwitchCombiner
 from batchstream.combine.weighted_vote_combiner import WeightedVoteCombiner
+from batchstream.combine.diverse_vote_combiner import DiverseVoteCombiner
+from batchstream.combine.similarity_grouping_combiner import SimilarityGroupingCombiner
 
 
 
@@ -212,6 +214,8 @@ def get_combining_experiment(suffix, sklearn_estimators, river_estimators, windo
     if comb_type == 'mv': combiner = MajorityVoteCombiner()
     elif comb_type == 'ds': combiner = DynamicSwitchCombiner(n_members=len(members), metric=Rolling(MacroF1(), window_size), logger_factory=logger_factory)
     elif comb_type == 'wv': combiner = WeightedVoteCombiner(n_members=len(members), metric=Rolling(MacroF1(), window_size), logger_factory=logger_factory)
+    elif comb_type == 'dv': combiner = DiverseVoteCombiner(n_members=len(members), K=3, clock=100, th=0.35, metric=Rolling(MacroF1(), window_size), logger_factory=logger_factory)
+    elif comb_type == 'sg': combiner = SimilarityGroupingCombiner(n_members=len(members), n_wait=50, similarity_threshold=0.15, similarity_penalty=0.5, metric=MacroF1(),  logger_factory=logger_factory)
     else: raise ValueError('comb_type not recognized')
     comb_pipeline = CombinationPipeline(members=members, combiner=combiner)
     
@@ -263,6 +267,8 @@ def get_combining_exp_different_detectors(suffix, sklearn_estimators, river_esti
     if comb_type == 'mv': combiner = MajorityVoteCombiner()
     elif comb_type == 'ds': combiner = DynamicSwitchCombiner(n_members=len(members), metric=Rolling(MacroF1(), window_size), logger_factory=logger_factory)
     elif comb_type == 'wv': combiner = WeightedVoteCombiner(n_members=len(members), metric=Rolling(MacroF1(), window_size), logger_factory=logger_factory)
+    elif comb_type == 'dv': combiner = DiverseVoteCombiner(n_members=len(members), K=3, clock=100, th=0.35, metric=Rolling(MacroF1(), window_size), logger_factory=logger_factory)
+    elif comb_type == 'sg': combiner = SimilarityGroupingCombiner(n_members=len(members), n_wait=50, similarity_threshold=0.15, similarity_penalty=0.5, metric=MacroF1(),  logger_factory=logger_factory)
     else: raise ValueError('comb_type not recognized')
     comb_pipeline = CombinationPipeline(members=members, combiner=combiner)
     
@@ -293,6 +299,8 @@ def get_combining_exp_different_s(suffix, sklearn_estimators, river_estimators, 
 
     if comb_type == 'mv': combiner = MajorityVoteCombiner()
     elif comb_type == 'ds': combiner = DynamicSwitchCombiner(n_members=len(members), metric=Rolling(MacroF1(), window_size), logger_factory=logger_factory)
+    elif comb_type == 'dv': combiner = DiverseVoteCombiner(n_members=len(members), K=3, clock=100, th=0.35, metric=Rolling(MacroF1(), window_size), logger_factory=logger_factory)
+    elif comb_type == 'sg': combiner = SimilarityGroupingCombiner(n_members=len(members), n_wait=50, similarity_threshold=0.15, similarity_penalty=0.5, metric=MacroF1(),  logger_factory=logger_factory)
     elif comb_type == 'wv': combiner = WeightedVoteCombiner(n_members=len(members), metric=Rolling(MacroF1(), window_size), logger_factory=logger_factory)
     else: raise ValueError('comb_type not recognized')
     comb_pipeline = CombinationPipeline(members=members, combiner=combiner)

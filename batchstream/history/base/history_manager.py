@@ -34,6 +34,8 @@ class HistoryManager:
         self._replacement_history.append(idx)
 
     def get_last_replacement_idx(self):
+        if len(self._replacement_history) == 0:
+            return None
         return self._replacement_history[-1]
 
     def update_retraining_info(self, drift_iter: int, detector_idx: int, type: str='out'):
