@@ -91,7 +91,10 @@ class DiverseVoteCombiner(PipelineCombiner):
         return selected_indices
         
     def _get_diverse_models(self, model_scores):
-        good_enough_model_indices = np.where(np.array(model_scores) > self._th)[0]
+        max_val = np.max(model_scores)
+        th = max_val - max_val * self._th
+        good_enough_model_indices = np.where(np.array(model_scores) > th)[0]
+        if len(good_enough_model_indices) == 0: good_enough_model_indices = np.array([i for i in range(0, len(model_scores))])
         best_model_indices = [i for i in range(len(self._prediction_vector_list)) if i in good_enough_model_indices]  
         best_prediction_vector_list = [np.array(self._prediction_vector_list[i]) for i in range(len(self._prediction_vector_list)) if i in good_enough_model_indices] 
         best_model_idx = np.argmax(np.where(np.array(model_scores) > self._th)[0])

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --job-name=stream
-#SBATCH --cpus-per-task=12
+#SBATCH --cpus-per-task=4
 #SBATCH --mail-type=END,FAIL
 #SBATCH --gpus-per-node=0
 #SBATCH --mail-user=01142171@pw.edu.pl
@@ -10,5 +10,5 @@
 
 source /home2/faculty/pgolik/.pyenv/versions/batchstream/bin/activate
 
-python /home2/faculty/pgolik/batchstream/main_ohio.py
+python /home2/faculty/pgolik/batchstream/main_combine.py
 

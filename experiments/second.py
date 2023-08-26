@@ -45,7 +45,7 @@ from batchstream.combine.similarity_grouping_combiner import SimilarityGroupingC
 
 
 
-def get_evidently_input_handlers(n_curr, n_ref, data_stattest_threshold, target_stattest_threshold, logger_factory, data_drift=True, target_drift=True):
+def get_evidently_input_handlers(n_curr, n_ref, data_stattest_threshold, target_stattest_threshold, logger_factory, data_drift=True, target_drift=True, from_last_repl=True):
     if not data_drift and not target_drift: return None
     
     ### INPUT DRIFT DETECTION
@@ -70,12 +70,12 @@ def get_evidently_input_handlers(n_curr, n_ref, data_stattest_threshold, target_
         monitoring_steps.append((ev2.name, ev2))
     input_monitoring = DriftMonitoringPipeline(monitoring_steps)
     
-    input_drift_retraining_strategy = FromLastReplacementRetrainingStrategy()#SimpleRetrainingStrategy(n_last_retrain=n_curr, n_last_test=0)#FromLastReplacementRetrainingStrategy()
+    input_drift_retraining_strategy = FromLastReplacementRetrainingStrategy() if from_last_repl else SimpleRetrainingStrategy(n_last_retrain=n_curr, n_last_test=0)
     input_detector = DriftHandler(input_monitoring, input_drift_retraining_strategy)
 
     return input_detector
     
-def get_evidently_output_handlers(n_curr, n_ref, logger_factory):
+def get_evidently_output_handlers(n_curr, n_ref, logger_factory, from_last_repl=True):
     ### OUTPUT (PERFORMANCE) DRIFT DETECTION
     # Detector 2.1 - Performance Drift
 
@@ -89,9 +89,8 @@ def get_evidently_output_handlers(n_curr, n_ref, logger_factory):
     ev3 = EvidentlyMonitoringStep(performance_drift, d3, logger_factory, min_instances=2*n_curr, clock=n_curr, name='performance_drift_eval')
 
     output_monitoring = DriftMonitoringPipeline([(ev3.name, ev3)])
-    output_drift_retraining_strategy = FromLastReplacementRetrainingStrategy()#SimpleRetrainingStrategy(n_last_retrain=n_curr, n_last_test=0)#FromLastReplacementRetrainingStrategy()
+    output_drift_retraining_strategy = FromLastReplacementRetrainingStrategy() if from_last_repl else SimpleRetrainingStrategy(n_last_retrain=n_curr, n_last_test=0)
     output_detector = DriftHandler(output_monitoring, output_drift_retraining_strategy)
-    
     return output_detector
 
 
@@ -223,11 +222,11 @@ def get_combining_experiment(suffix, sklearn_estimators, river_estimators, windo
     return experiment
 
 def _construct_batch_member(n_curr, n_first_fit, data_stattest_threshold, target_stattest_threshold, sklearn_estimator,
-        n_online, logger_factory, is_data_drift, is_target_drift, is_performance):
+        n_online, logger_factory, is_data_drift, is_target_drift, is_performance, from_last_repl):
     input_handlers = get_evidently_input_handlers(n_curr=n_curr, n_ref=n_curr,
         data_stattest_threshold=data_stattest_threshold, target_stattest_threshold=target_stattest_threshold,
-        logger_factory=logger_factory, data_drift=is_data_drift, target_drift=is_target_drift)
-    output_handlers = get_evidently_output_handlers(n_curr, n_ref=n_curr, logger_factory=logger_factory) if is_performance else None
+        logger_factory=logger_factory, data_drift=is_data_drift, target_drift=is_target_drift, from_last_repl=from_last_repl) if (is_data_drift or is_target_drift) else None
+    output_handlers = get_evidently_output_handlers(n_curr, n_ref=n_curr, logger_factory=logger_factory, from_last_repl=from_last_repl) if is_performance else None
     model_comparer = ShadowOnlineComparer(n_online=n_online)
     sklearn_pipeline = SklearnEstimator(sklearn_estimator)
     batch_pipeline = get_batch_pipeline(n_curr, n_first_fit, sklearn_pipeline, input_handlers, output_handlers, model_comparer, logger_factory)

@@ -48,7 +48,6 @@ class SimilarityGroupingCombiner(PipelineCombiner):
         if self._replacement_detected == True:
             self._from_replacement_clock += 1
             if self._from_replacement_clock % self._n_wait == 0:
-                print(f'CNT: {self.counter} calcualting...')
                 self._replacement_detected = False
                 self._from_replacement_clock = 0
                 self._weights = self._get_group_weights(self._prediction_vector_list, model_scores, self._similarity_threshold, self._similarity_penalty)
