@@ -34,10 +34,28 @@ Directories:
 - `experiments` - contains implementation of functions setting up different experiments
 - `scripts` - contains scripts defining performed experiments for employed data streams
 - `utils` - contains functions implementing artificial data streams generation, reading data from files etc.
+- `demo.py` - contains a simple library usage demo.
 
 Files:
 - `requirements.txt` - a file listing all library dependencies, it can be used to recreate a python environment.
 - `start.sh` - a bash script running a given file from the `scripts` directory on a HPC cluster.
+---
+
+## Environment setup
+
+**1. Install Conda:**
+If Anaconda is not already installed on the other computer.
+
+**2. Create the Conda Environment:**
+```bash
+conda env create -f environment.yml
+```
+
+**3. Activate the Conda Environment:**
+```bash
+conda activate your_environment_name
+```
+
 ---
 ## Used libraries
 
