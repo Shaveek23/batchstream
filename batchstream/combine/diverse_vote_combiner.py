@@ -97,7 +97,7 @@ class DiverseVoteCombiner(PipelineCombiner):
         if len(good_enough_model_indices) == 0: good_enough_model_indices = np.array([i for i in range(0, len(model_scores))])
         best_model_indices = [i for i in range(len(self._prediction_vector_list)) if i in good_enough_model_indices]  
         best_prediction_vector_list = [np.array(self._prediction_vector_list[i]) for i in range(len(self._prediction_vector_list)) if i in good_enough_model_indices] 
-        best_model_idx = np.argmax(np.where(np.array(model_scores) > self._th)[0])
+        best_model_idx = np.argmax(good_enough_model_indices)
         selected_indices = self.select_maximally_different_models(best_prediction_vector_list, self._K, best_model_idx)
         selected_model_indices = [best_model_indices[j] for j in selected_indices]
         return selected_model_indices
