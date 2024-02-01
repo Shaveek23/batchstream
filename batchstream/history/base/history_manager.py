@@ -6,7 +6,7 @@ import numpy as np
 
 class HistoryManager:
 
-    def __init__(self, n_flush_clock: int = 20_000, n_to_stay: int = 15_000, y_dtype=np.int8):
+    def __init__(self, n_flush_clock: int = 300_000, n_to_stay: int = 290_000, y_dtype=np.int8):
         self._counter: int = 0
         self._x_history: List = []
         self._y_history: List = []
@@ -15,6 +15,7 @@ class HistoryManager:
         self._in_drift_history: Dict[int, List[int]] = {}
         self._out_drift_history: Dict[int, List[int]] = {}
         self._last_retraining: int = None
+        self._replacement_history: List[int] = []
         self._n_flush_clock: int = n_flush_clock
         self._n_to_stay: int = n_to_stay
         self._first_index: int = 0
@@ -28,6 +29,14 @@ class HistoryManager:
         self._y_history.append(y)
         self.increment_counter()
         self.flush()
+
+    def update_replacement_history(self, idx: int):
+        self._replacement_history.append(idx)
+
+    def get_last_replacement_idx(self):
+        if len(self._replacement_history) == 0:
+            return None
+        return self._replacement_history[-1]
 
     def update_retraining_info(self, drift_iter: int, detector_idx: int, type: str='out'):
         if type == 'in': 
@@ -86,6 +95,11 @@ class HistoryManager:
     @property
     def drift_history(self) -> List[List[int]]:
         return self._drift_history
+    
+    @property
+    def replacement_history(self) -> List[int]:
+        return self._replacement_history
+    
     
     def get_params(self):
         return {

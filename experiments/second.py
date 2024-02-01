@@ -15,6 +15,7 @@ from sklearn.pipeline import Pipeline
 
 from batchstream.batch_monitoring_strategy.simple_monitoring_strategy import \
     SimpleMonitoringStrategy
+from batchstream.retraining_strategy.from_last_replacement_retraining_strategy import FromLastReplacementRetrainingStrategy
 from batchstream.combine.majority_vote_combiner import MajorityVoteCombiner
 from batchstream.drift_handlers.base.drift_handler import DriftHandler
 from batchstream.estimators.sklearn_estimator import SklearnEstimator
@@ -39,10 +40,12 @@ from batchstream.utils.logging.base.logger_factory import LoggerFactory
 from batchstream.combine.majority_vote_combiner import MajorityVoteCombiner
 from batchstream.combine.dynamic_switch_combiner import DynamicSwitchCombiner
 from batchstream.combine.weighted_vote_combiner import WeightedVoteCombiner
+from batchstream.combine.diverse_vote_combiner import DiverseVoteCombiner
+from batchstream.combine.similarity_grouping_combiner import SimilarityGroupingCombiner
 
 
 
-def get_evidently_input_handlers(n_curr, n_ref, data_stattest_threshold, target_stattest_threshold, logger_factory, data_drift=True, target_drift=True):
+def get_evidently_input_handlers(n_curr, n_ref, data_stattest_threshold, target_stattest_threshold, logger_factory, data_drift=True, target_drift=True, from_last_repl=True):
     if not data_drift and not target_drift: return None
     
     ### INPUT DRIFT DETECTION
@@ -67,12 +70,12 @@ def get_evidently_input_handlers(n_curr, n_ref, data_stattest_threshold, target_
         monitoring_steps.append((ev2.name, ev2))
     input_monitoring = DriftMonitoringPipeline(monitoring_steps)
     
-    input_drift_retraining_strategy = SimpleRetrainingStrategy(n_last_retrain=n_curr, n_last_test=0)
+    input_drift_retraining_strategy = FromLastReplacementRetrainingStrategy() if from_last_repl else SimpleRetrainingStrategy(n_last_retrain=n_curr, n_last_test=0)
     input_detector = DriftHandler(input_monitoring, input_drift_retraining_strategy)
 
     return input_detector
     
-def get_evidently_output_handlers(n_curr, n_ref, logger_factory):
+def get_evidently_output_handlers(n_curr, n_ref, logger_factory, from_last_repl=True):
     ### OUTPUT (PERFORMANCE) DRIFT DETECTION
     # Detector 2.1 - Performance Drift
 
@@ -86,9 +89,8 @@ def get_evidently_output_handlers(n_curr, n_ref, logger_factory):
     ev3 = EvidentlyMonitoringStep(performance_drift, d3, logger_factory, min_instances=2*n_curr, clock=n_curr, name='performance_drift_eval')
 
     output_monitoring = DriftMonitoringPipeline([(ev3.name, ev3)])
-    output_drift_retraining_strategy = SimpleRetrainingStrategy(n_last_retrain=n_curr, n_last_test=0)
+    output_drift_retraining_strategy = FromLastReplacementRetrainingStrategy() if from_last_repl else SimpleRetrainingStrategy(n_last_retrain=n_curr, n_last_test=0)
     output_detector = DriftHandler(output_monitoring, output_drift_retraining_strategy)
-    
     return output_detector
 
 
@@ -150,7 +152,7 @@ def get_batch_pipeline(n_curr, n_first_fit, sklearn_pipe, input_handlers, output
 def get_evidently_experiment(suffix, sklearn_pipeline, n_online=500, n_first_fit=500, window_size=1000, n_curr=5_000, data_stattest_threshold=0.05, target_stattest_threshold=0.05,
     data_drift=True, target_drift=True, is_performance=True):
     prefix = str(uuid.uuid4())[:8]
-    name = f'{prefix}_evidently_d_{data_drift}_t_{target_drift}__{suffix}'
+    name = f'{prefix}_evidently_d_{data_drift}_t_{target_drift}_p_{is_performance}__{suffix}'
     exp_name = f'{name}_{datetime.today().strftime("%Y%m%d_%H%M%S")}'
     
     logger_factory = LoggerFactory(exp_name)
@@ -164,6 +166,7 @@ def get_evidently_experiment(suffix, sklearn_pipeline, n_online=500, n_first_fit
     eval_pipe = get_eval_pipeline(window_size)
     experiment = StreamExperiment(batch_pipeline, eval_pipe, logger_factory)
     return experiment
+
 
 def get_adwin_experiment(suffix, sklearn_pipeline, n_online=500, n_first_fit=500, window_size=1000,
     clock=5000, grace_period=5000, min_window_length=1000, delta=1e-5, adwin_detector_type='all', df_columns=None):
@@ -210,6 +213,8 @@ def get_combining_experiment(suffix, sklearn_estimators, river_estimators, windo
     if comb_type == 'mv': combiner = MajorityVoteCombiner()
     elif comb_type == 'ds': combiner = DynamicSwitchCombiner(n_members=len(members), metric=Rolling(MacroF1(), window_size), logger_factory=logger_factory)
     elif comb_type == 'wv': combiner = WeightedVoteCombiner(n_members=len(members), metric=Rolling(MacroF1(), window_size), logger_factory=logger_factory)
+    elif comb_type == 'dv': combiner = DiverseVoteCombiner(n_members=len(members), K=3, clock=100, th=0.35, metric=Rolling(MacroF1(), window_size), logger_factory=logger_factory)
+    elif comb_type == 'sg': combiner = SimilarityGroupingCombiner(n_members=len(members), n_wait=50, similarity_threshold=0.15, similarity_penalty=0.5, metric=MacroF1(),  logger_factory=logger_factory)
     else: raise ValueError('comb_type not recognized')
     comb_pipeline = CombinationPipeline(members=members, combiner=combiner)
     
@@ -217,11 +222,11 @@ def get_combining_experiment(suffix, sklearn_estimators, river_estimators, windo
     return experiment
 
 def _construct_batch_member(n_curr, n_first_fit, data_stattest_threshold, target_stattest_threshold, sklearn_estimator,
-        n_online, logger_factory, is_data_drift, is_target_drift, is_performance):
+        n_online, logger_factory, is_data_drift, is_target_drift, is_performance, from_last_repl):
     input_handlers = get_evidently_input_handlers(n_curr=n_curr, n_ref=n_curr,
         data_stattest_threshold=data_stattest_threshold, target_stattest_threshold=target_stattest_threshold,
-        logger_factory=logger_factory, data_drift=is_data_drift, target_drift=is_target_drift)
-    output_handlers = get_evidently_output_handlers(n_curr, n_ref=n_curr, logger_factory=logger_factory) if is_performance else None
+        logger_factory=logger_factory, data_drift=is_data_drift, target_drift=is_target_drift, from_last_repl=from_last_repl) if (is_data_drift or is_target_drift) else None
+    output_handlers = get_evidently_output_handlers(n_curr, n_ref=n_curr, logger_factory=logger_factory, from_last_repl=from_last_repl) if is_performance else None
     model_comparer = ShadowOnlineComparer(n_online=n_online)
     sklearn_pipeline = SklearnEstimator(sklearn_estimator)
     batch_pipeline = get_batch_pipeline(n_curr, n_first_fit, sklearn_pipeline, input_handlers, output_handlers, model_comparer, logger_factory)
@@ -261,6 +266,8 @@ def get_combining_exp_different_detectors(suffix, sklearn_estimators, river_esti
     if comb_type == 'mv': combiner = MajorityVoteCombiner()
     elif comb_type == 'ds': combiner = DynamicSwitchCombiner(n_members=len(members), metric=Rolling(MacroF1(), window_size), logger_factory=logger_factory)
     elif comb_type == 'wv': combiner = WeightedVoteCombiner(n_members=len(members), metric=Rolling(MacroF1(), window_size), logger_factory=logger_factory)
+    elif comb_type == 'dv': combiner = DiverseVoteCombiner(n_members=len(members), K=3, clock=100, th=0.35, metric=Rolling(MacroF1(), window_size), logger_factory=logger_factory)
+    elif comb_type == 'sg': combiner = SimilarityGroupingCombiner(n_members=len(members), n_wait=50, similarity_threshold=0.15, similarity_penalty=0.5, metric=MacroF1(),  logger_factory=logger_factory)
     else: raise ValueError('comb_type not recognized')
     comb_pipeline = CombinationPipeline(members=members, combiner=combiner)
     
@@ -291,6 +298,8 @@ def get_combining_exp_different_s(suffix, sklearn_estimators, river_estimators, 
 
     if comb_type == 'mv': combiner = MajorityVoteCombiner()
     elif comb_type == 'ds': combiner = DynamicSwitchCombiner(n_members=len(members), metric=Rolling(MacroF1(), window_size), logger_factory=logger_factory)
+    elif comb_type == 'dv': combiner = DiverseVoteCombiner(n_members=len(members), K=3, clock=100, th=0.35, metric=Rolling(MacroF1(), window_size), logger_factory=logger_factory)
+    elif comb_type == 'sg': combiner = SimilarityGroupingCombiner(n_members=len(members), n_wait=50, similarity_threshold=0.15, similarity_penalty=0.5, metric=MacroF1(),  logger_factory=logger_factory)
     elif comb_type == 'wv': combiner = WeightedVoteCombiner(n_members=len(members), metric=Rolling(MacroF1(), window_size), logger_factory=logger_factory)
     else: raise ValueError('comb_type not recognized')
     comb_pipeline = CombinationPipeline(members=members, combiner=combiner)

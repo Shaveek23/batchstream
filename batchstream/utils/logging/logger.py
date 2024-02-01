@@ -60,3 +60,9 @@ class Logger(ILogger):
         file_path = path.join(self._output_dir, f'model_{type}_history.csv')
         with open(file_path, mode="a+") as f:        
             f.write(f'{i}\n')
+
+    def append_to_txt(self, line: str, file_name: str):
+        file_path =path.join(self._output_dir, file_name)
+        with open(file_path, mode="a+") as f:        
+            f.write(f'{line}\n')
+            

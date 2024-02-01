@@ -57,6 +57,7 @@ class BatchPipeline(StreamPipeline):
             X = self._history.get_x_history_as_pd()
             Y = self._history.get_y_history_as_pd()
             self._estimator.first_fit(X, Y)
+            self._history.update_replacement_history(self._history.counter)
         return False
     
     def _make_result_when_not_fit(self, x, y) -> int:
@@ -106,6 +107,7 @@ class BatchPipeline(StreamPipeline):
             self._logger.log_model_history(self._history.counter)
             self._history.update_retraining_info(self._history.counter, detector_idx, detector_type)
             self._estimator.batch_model = retrained_model
+            self._history.update_replacement_history(self._history.counter)
 
     def _select_better_model_online(self, x, y, old_model_prediction):
         if self._comparer == None: return
@@ -115,6 +117,7 @@ class BatchPipeline(StreamPipeline):
             self._logger.log_model_history(self._history.counter)
             self._history.update_retraining_info(drift_iter, detector_idx, detector_type)
             self._estimator.batch_model = better_model
+            self._history.update_replacement_history(self._history.counter)
    
     def get_name(self) -> str:
         return "BatchPipeline" # TO DO
