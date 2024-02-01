@@ -3,7 +3,7 @@ BatchStream Learn library
 Authors: Paweł Golik
 ---
 
-The creation of this library stemmed from the research conducted during the pursuit of a Master of Science thesis titled 'Online learning and batch learning methods for data streams' at the Faculty of Mathematics and Information Science at Warsaw University of Technology during the academic year 2022/23.
+The creation of this library stemmed from the research conducted during the pursuit of a Master of Science thesis titled 'Online learning and batch learning methods for data streams' at the Faculty of Mathematics and Information Science at Warsaw University of Technology during the academic year 2022/23 and further research resulting in a publication titled 'Hybrid Ensemble-Based Travel Mode Prediction' in 21st Symposium on Intelligent Data Analysis (IDA 2023).
 
 ---
 
